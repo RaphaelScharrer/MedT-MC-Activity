@@ -67,18 +67,12 @@ fun PlayerCreationScreen(
                 shadowElevation = 8.dp
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    if (state.hasChanges) {
-                        Button(
-                            onClick = onFinish,
-                            enabled = !state.isLoading,
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                        ) {
-                            Text("Weiter")
-                        }
+                    Button(
+                        onClick = onFinish,
+                        enabled = !state.isLoading && state.teams.isNotEmpty(),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Weiter")
                     }
                 }
             }

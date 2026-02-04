@@ -72,29 +72,28 @@ interface ActivityApi {
     suspend fun deletePlayer(@Path("id") id: Long)
 
     // ========== WORD ENDPOINTS ==========
-    // ✅ FIXED: Removed "api/" prefix to match backend routes
 
-    @GET("words")
+    @GET("api/words")
     suspend fun getAllWords(): List<Word>
 
-    @GET("words/{id}")
+    @GET("api/words/{id}")
     suspend fun getWord(@Path("id") id: Long): Word
 
-    @GET("words/random")
+    @GET("api/words/random")
     suspend fun getRandomWord(): Word
 
-    @GET("words/random/{category}")
+    @GET("api/words/random/{category}")
     suspend fun getRandomWordByCategory(@Path("category") category: String): Word
 
-    @GET("words/minpoints/{points}")
+    @GET("api/words/minpoints/{points}")
     suspend fun getWordsByMinPoints(@Path("points") minPoints: Int): List<Word>
 
-    @POST("words")
+    @POST("api/words")
     suspend fun createWord(@Body word: Word): Word
 
-    @PUT("words/{id}")
+    @PUT("api/words/{id}")
     suspend fun updateWord(@Path("id") id: Long, @Body word: Word): Word
 
-    @DELETE("words/{id}")
+    @DELETE("api/words/{id}")
     suspend fun deleteWord(@Path("id") id: Long)
 }
