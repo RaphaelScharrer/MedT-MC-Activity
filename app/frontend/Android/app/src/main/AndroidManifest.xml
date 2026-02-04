@@ -24,6 +24,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".view.playfield.GameBoardActivity"
+            android:exported="false"
+            android:theme="@style/Theme.ActivitiyAndroid" />
+
+
+        <activity
+            android:name=".view.gameplay.GamePlayActivity"
+            android:exported="false" />
+
+
+
     </application>
 
 </manifest>
