@@ -94,15 +94,6 @@ public class PlayerResource {
                         .build();
             }
 
-            // Prüfen ob Spieler bereits existiert
-            Player existing = Player.findByName(dto.name());
-            if (existing != null) {
-                return Response
-                        .status(Response.Status.CONFLICT)
-                        .entity(ErrorResponse.of(409, "Spieler mit Name '" + dto.name() + "' existiert bereits", uriInfo.getPath()))
-                        .build();
-            }
-
             // Team laden wenn angegeben
             Team team = null;
             if (dto.team() != null) {
@@ -113,6 +104,15 @@ public class PlayerResource {
                             .entity(ErrorResponse.of(400, "Team mit ID " + dto.team() + " nicht gefunden", uriInfo.getPath()))
                             .build();
                 }
+            }
+
+            // Prüfen ob Spieler mit diesem Namen bereits im selben Team existiert
+            Player existing = Player.findByNameAndTeam(dto.name(), team);
+            if (existing != null) {
+                return Response
+                        .status(Response.Status.CONFLICT)
+                        .entity(ErrorResponse.of(409, "Spieler mit Name '" + dto.name() + "' existiert bereits in diesem Team", uriInfo.getPath()))
+                        .build();
             }
 
             Player player = dto.toEntity(team);
@@ -146,32 +146,35 @@ public class PlayerResource {
         }
 
         try {
+            // Team laden (für Duplikat-Check)
+            Team newTeam = player.team;
+            if (dto.team() != null) {
+                newTeam = Team.findById(dto.team());
+                if (newTeam == null) {
+                    return Response
+                            .status(Response.Status.BAD_REQUEST)
+                            .entity(ErrorResponse.of(400, "Team mit ID " + dto.team() + " nicht gefunden", uriInfo.getPath()))
+                            .build();
+                }
+            } else {
+                newTeam = null;
+            }
+
             // Name aktualisieren
             if (dto.name() != null && !dto.name().trim().isEmpty()) {
-                // Prüfen ob neuer Name bereits existiert (außer bei sich selbst)
-                Player existing = Player.findByName(dto.name());
+                // Prüfen ob neuer Name bereits im Ziel-Team existiert (außer bei sich selbst)
+                Player existing = Player.findByNameAndTeam(dto.name(), newTeam);
                 if (existing != null && !existing.id.equals(id)) {
                     return Response
                             .status(Response.Status.CONFLICT)
-                            .entity(ErrorResponse.of(409, "Spieler mit Name '" + dto.name() + "' existiert bereits", uriInfo.getPath()))
+                            .entity(ErrorResponse.of(409, "Spieler mit Name '" + dto.name() + "' existiert bereits in diesem Team", uriInfo.getPath()))
                             .build();
                 }
                 player.name = dto.name();
             }
 
             // Team aktualisieren
-            if (dto.team() != null) {
-                Team team = Team.findById(dto.team());
-                if (team == null) {
-                    return Response
-                            .status(Response.Status.BAD_REQUEST)
-                            .entity(ErrorResponse.of(400, "Team mit ID " + dto.team() + " nicht gefunden", uriInfo.getPath()))
-                            .build();
-                }
-                player.team = team;
-            } else {
-                player.team = null;
-            }
+            player.team = newTeam;
 
             // Punkte aktualisieren
             if (dto.pointsEarned() != null) {

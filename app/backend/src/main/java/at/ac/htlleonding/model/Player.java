@@ -9,10 +9,13 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @Entity
+@Table(uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"name", "team_id"})
+})
 public class Player extends PanacheEntity {
 
     @NotBlank(message = "Name darf nicht leer sein")
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     public String name;
 
     @Min(0)
@@ -34,6 +37,13 @@ public class Player extends PanacheEntity {
 
     public static Player findByName(String name) {
         return find("LOWER(name) = LOWER(?1)", name).firstResult();
+    }
+
+    public static Player findByNameAndTeam(String name, Team team) {
+        if (team == null) {
+            return find("LOWER(name) = LOWER(?1) AND team IS NULL", name).firstResult();
+        }
+        return find("LOWER(name) = LOWER(?1) AND team = ?2", name, team).firstResult();
     }
 
     public static List<Player> findByTeamId(Long teamId) {

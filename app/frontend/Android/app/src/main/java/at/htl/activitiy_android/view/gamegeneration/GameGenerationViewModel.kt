@@ -2,8 +2,7 @@ package at.htl.activitiy_android.view.gamegeneration
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import at.htl.activitiy_android.data.api.RetrofitInstance
-import at.htl.activitiy_android.domain.model.Game
+import at.htl.activitiy_android.data.repository.GameRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -11,7 +10,7 @@ import kotlinx.coroutines.launch
 
 class GameGenerationViewModel : ViewModel() {
 
-    private val api = RetrofitInstance.api
+    private val repository = GameRepository
 
     private val _state = MutableStateFlow(GameGenerationState())
     val state: StateFlow<GameGenerationState> = _state
@@ -39,45 +38,49 @@ class GameGenerationViewModel : ViewModel() {
     private fun loadRecentGames() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            try {
-                val games = api.getAllGames()
-                _state.update {
-                    it.copy(
-                        recentGames = games.take(5),
-                        isLoading = false
-                    )
+            repository.getAllGames()
+                .onSuccess { games ->
+                    _state.update {
+                        it.copy(
+                            recentGames = games.take(5),
+                            isLoading = false
+                        )
+                    }
                 }
-            } catch (e: Exception) {
-                _state.update {
-                    it.copy(
-                        error = "Fehler beim Laden der Spiele: ${e.message}",
-                        isLoading = false
-                    )
+                .onFailure { e ->
+                    _state.update {
+                        it.copy(
+                            error = "Fehler beim Laden der Spiele: ${e.message}",
+                            isLoading = false
+                        )
+                    }
                 }
-            }
         }
     }
 
     fun loadGame(gameId: Long) {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            try {
-                val game = api.getGame(gameId)
-                _state.update {
-                    it.copy(
-                        currentGame = game,
-                        gameNameInput = game.name ?: "",
-                        isLoading = false
-                    )
+            repository.loadGame(gameId)
+                .onSuccess { game ->
+                    // Start new session for this game
+                    repository.startNewSession(gameId)
+                    _state.update {
+                        it.copy(
+                            currentGame = game,
+                            gameNameInput = game.name ?: "",
+                            isLoading = false
+                        )
+                    }
                 }
-            } catch (e: Exception) {
-                _state.update {
-                    it.copy(
-                        error = "Fehler beim Laden: ${e.message}",
-                        isLoading = false
-                    )
+                .onFailure { e ->
+                    _state.update {
+                        it.copy(
+                            error = "Fehler beim Laden: ${e.message}",
+                            isLoading = false
+                        )
+                    }
                 }
-            }
         }
     }
 
@@ -94,35 +97,25 @@ class GameGenerationViewModel : ViewModel() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
 
-            try {
-                val currentGame = _state.value.currentGame
-                val updatedGame = Game(
-                    id = gameId,
-                    name = gameName,
-                    createdOn = currentGame?.createdOn,
-                    teamIds = currentGame?.teamIds
-                )
-
-                val savedGame = api.updateGame(gameId, updatedGame)
-
-                _state.update {
-                    it.copy(
-                        currentGame = savedGame,
-                        isLoading = false,
-                        successMessage = "Spiel aktualisiert!"
-                    )
+            repository.updateGame(gameId, gameName)
+                .onSuccess { savedGame ->
+                    _state.update {
+                        it.copy(
+                            currentGame = savedGame,
+                            isLoading = false,
+                            successMessage = "Spiel aktualisiert!"
+                        )
+                    }
+                    onSuccess(gameId)
                 }
-
-                onSuccess(gameId)
-
-            } catch (e: Exception) {
-                _state.update {
-                    it.copy(
-                        error = "Fehler beim Aktualisieren: ${e.message}",
-                        isLoading = false
-                    )
+                .onFailure { e ->
+                    _state.update {
+                        it.copy(
+                            error = "Fehler beim Aktualisieren: ${e.message}",
+                            isLoading = false
+                        )
+                    }
                 }
-            }
         }
     }
 
@@ -139,37 +132,33 @@ class GameGenerationViewModel : ViewModel() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
 
-            try {
-                val newGame = Game(
-                    id = null,
-                    name = gameName,
-                    createdOn = null,
-                    teamIds = null
-                )
+            repository.createGame(gameName)
+                .onSuccess { createdGame ->
+                    // Start new session for this game
+                    createdGame.id?.let { id ->
+                        repository.startNewSession(id)
+                    }
 
-                val createdGame = api.createGame(newGame)
+                    _state.update {
+                        it.copy(
+                            currentGame = createdGame,
+                            isLoading = false,
+                            gameNameInput = ""
+                        )
+                    }
 
-                _state.update {
-                    it.copy(
-                        currentGame = createdGame,
-                        isLoading = false,
-                        //successMessage = "Spiel '${createdGame.name}' erstellt!",
-                        gameNameInput = ""
-                    )
+                    createdGame.id?.let { gameId ->
+                        onSuccess(gameId)
+                    }
                 }
-
-                createdGame.id?.let { gameId ->
-                    onSuccess(gameId)
+                .onFailure { e ->
+                    _state.update {
+                        it.copy(
+                            error = "Fehler beim Erstellen: ${e.message}",
+                            isLoading = false
+                        )
+                    }
                 }
-
-            } catch (e: Exception) {
-                _state.update {
-                    it.copy(
-                        error = "Fehler beim Erstellen: ${e.message}",
-                        isLoading = false
-                    )
-                }
-            }
         }
     }
 }

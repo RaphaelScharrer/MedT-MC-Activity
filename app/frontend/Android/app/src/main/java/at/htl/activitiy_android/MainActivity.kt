@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.htl.activitiy_android.view.gamegeneration.GameGenerationScreen
 import at.htl.activitiy_android.view.gamegeneration.GameGenerationViewModel
+import at.htl.activitiy_android.view.gameplay.GamePlayScreen
 import at.htl.activitiy_android.view.gamesummary.GameSummaryScreen
 import at.htl.activitiy_android.view.teamgeneration.TeamGenerationEvent
 import at.htl.activitiy_android.view.teamgeneration.TeamGenerationScreen
@@ -105,6 +106,20 @@ fun AppNavigation() {
                     gameId = gameId,
                     onBack = {
                         currentScreen = Screen.PlayerCreation
+                    },
+                    onStartGame = {
+                        currentScreen = Screen.GamePlay
+                    }
+                )
+            }
+        }
+
+        Screen.GamePlay -> {
+            currentGameId?.let { gameId ->
+                GamePlayScreen(
+                    gameId = gameId,
+                    onBack = {
+                        currentScreen = Screen.GameSummary
                     }
                 )
             }
@@ -117,4 +132,5 @@ sealed class Screen {
     data object TeamGeneration : Screen()
     data object PlayerCreation : Screen()
     data object GameSummary : Screen()
+    data object GamePlay : Screen()
 }

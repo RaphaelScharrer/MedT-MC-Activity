@@ -21,6 +21,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 fun GameSummaryScreen(
     gameId: Long,
     onBack: () -> Unit = {},
+    onStartGame: () -> Unit = {},
     vm: GameSummaryViewModel = viewModel(
         factory = GameSummaryViewModelFactory(gameId)
     )
@@ -44,6 +45,29 @@ fun GameSummaryScreen(
                     }
                 }
             )
+        },
+        bottomBar = {
+            Surface(
+                tonalElevation = 3.dp,
+                shadowElevation = 8.dp
+            ) {
+                Button(
+                    onClick = onStartGame,
+                    enabled = !state.isLoading && state.teams.isNotEmpty(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Text(
+                        text = "Spiel starten",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
         }
     ) { padding ->
         Box(

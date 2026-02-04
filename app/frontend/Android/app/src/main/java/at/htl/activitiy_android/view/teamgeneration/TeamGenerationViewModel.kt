@@ -3,7 +3,7 @@ package at.htl.activitiy_android.view.teamgeneration
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import at.htl.activitiy_android.data.api.RetrofitInstance
+import at.htl.activitiy_android.data.repository.GameRepository
 import at.htl.activitiy_android.domain.model.Team
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +14,7 @@ class TeamGenerationViewModel(
     private val gameId: Long
 ) : ViewModel() {
 
-    private val api = RetrofitInstance.api
+    private val repository = GameRepository
 
     private val _state = MutableStateFlow(TeamGenerationState())
     val state: StateFlow<TeamGenerationState> = _state
@@ -43,22 +43,21 @@ class TeamGenerationViewModel(
 
     private fun loadExistingTeams() {
         viewModelScope.launch {
-            try {
-                val allTeams = api.getAllTeams()
-                val existingTeams = allTeams.filter { it.gameId == gameId }.sortedBy { it.position }
-
-                if (existingTeams.isNotEmpty()) {
-                    lastSavedTeamCount = existingTeams.size
-                    _state.update {
-                        it.copy(
-                            teamCountInput = existingTeams.size.toString(),
-                            teams = existingTeams
-                        )
+            repository.loadTeamsForGame(gameId)
+                .onSuccess { existingTeams ->
+                    if (existingTeams.isNotEmpty()) {
+                        lastSavedTeamCount = existingTeams.size
+                        _state.update {
+                            it.copy(
+                                teamCountInput = existingTeams.size.toString(),
+                                teams = existingTeams
+                            )
+                        }
                     }
                 }
-            } catch (e: Exception) {
-                println("Error loading existing teams: ${e.message}")
-            }
+                .onFailure { e ->
+                    println("Error loading existing teams: ${e.message}")
+                }
         }
     }
 
@@ -118,42 +117,29 @@ class TeamGenerationViewModel(
             _state.update { it.copy(isLoading = true, error = null) }
 
             try {
-                val oldTeams = api.getAllTeams().filter { it.gameId == gameId }
+                // Get current teams from repository
+                val currentTeams = repository.getTeams().filter { it.gameId == gameId }
 
-                // ✅ CHECK: Did team count actually change?
+                // Check: Did team count actually change?
                 val teamCountChanged = lastSavedTeamCount != null && lastSavedTeamCount != count
 
                 if (teamCountChanged) {
                     // Team count changed - delete everything and start fresh
-                    oldTeams.forEach { team ->
-                        team.id?.let { teamId ->
-                            api.deleteTeam(teamId)
-                        }
-                    }
-
-                    val allPlayers = api.getAllPlayers()
-                    allPlayers.forEach { player ->
-                        if (oldTeams.any { it.id == player.team }) {
-                            player.id?.let { playerId ->
-                                api.deletePlayer(playerId)
-                            }
-                        }
-                    }
+                    repository.deleteAllTeamsForGame(gameId)
+                        .onFailure { throw it }
 
                     // Create new teams
-                    val newTeams = (0 until count).map { i ->
-                        Team(
+                    val savedTeams = mutableListOf<Team>()
+                    for (i in 0 until count) {
+                        val team = Team(
                             id = null,
                             position = i,
                             gameId = gameId,
                             playerIds = null
                         )
-                    }
-
-                    val savedTeams = mutableListOf<Team>()
-                    newTeams.forEach { team ->
-                        val saved = api.createTeam(team)
-                        savedTeams.add(saved)
+                        repository.createTeam(team)
+                            .onSuccess { savedTeams.add(it) }
+                            .onFailure { throw it }
                     }
 
                     lastSavedTeamCount = count
@@ -162,24 +148,22 @@ class TeamGenerationViewModel(
                         it.copy(
                             teams = savedTeams,
                             isLoading = false,
-                            hasChanges = false,
+                            hasChanges = false
                         )
                     }
-                } else if (lastSavedTeamCount == null) {
+                } else if (lastSavedTeamCount == null || currentTeams.isEmpty()) {
                     // First time creating teams
-                    val newTeams = (0 until count).map { i ->
-                        Team(
+                    val savedTeams = mutableListOf<Team>()
+                    for (i in 0 until count) {
+                        val team = Team(
                             id = null,
                             position = i,
                             gameId = gameId,
                             playerIds = null
                         )
-                    }
-
-                    val savedTeams = mutableListOf<Team>()
-                    newTeams.forEach { team ->
-                        val saved = api.createTeam(team)
-                        savedTeams.add(saved)
+                        repository.createTeam(team)
+                            .onSuccess { savedTeams.add(it) }
+                            .onFailure { throw it }
                     }
 
                     lastSavedTeamCount = count
@@ -188,7 +172,7 @@ class TeamGenerationViewModel(
                         it.copy(
                             teams = savedTeams,
                             isLoading = false,
-                            hasChanges = false,
+                            hasChanges = false
                         )
                     }
                 } else {
@@ -196,7 +180,7 @@ class TeamGenerationViewModel(
                     _state.update {
                         it.copy(
                             isLoading = false,
-                            hasChanges = false,
+                            hasChanges = false
                         )
                     }
                 }

@@ -3,7 +3,7 @@ package at.htl.activitiy_android.view.gamesummary
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import at.htl.activitiy_android.data.api.RetrofitInstance
+import at.htl.activitiy_android.data.repository.GameRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -14,7 +14,7 @@ class GameSummaryViewModel(
     private val gameId: Long
 ) : ViewModel() {
 
-    private val api = RetrofitInstance.api
+    private val repository = GameRepository
 
     private val _state = MutableStateFlow(GameSummaryState())
     val state: StateFlow<GameSummaryState> = _state
@@ -22,23 +22,21 @@ class GameSummaryViewModel(
     fun loadGameData() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
+
             try {
-                // Load game
-                val game = api.getGame(gameId)
+                // Load data from repository (uses cached data if available)
+                repository.loadGame(gameId).onFailure { throw it }
+                repository.loadTeamsForGame(gameId).onFailure { throw it }
+                repository.loadPlayersForGame(gameId).onFailure { throw it }
 
-                // Load teams for this game
-                val allTeams = api.getAllTeams()
-                val teams = allTeams.filter { it.gameId == gameId }.sortedBy { it.position }
-
-                // Load all players for these teams
-                val allPlayers = api.getAllPlayers()
-                val players = allPlayers.filter { player ->
-                    teams.any { team -> team.id == player.team }
-                }
+                // Get data from repository's single source of truth
+                val session = repository.currentSession.value
+                val teams = repository.getTeams().filter { it.gameId == gameId }
+                val players = repository.getPlayers()
 
                 _state.update {
                     it.copy(
-                        gameName = game.name ?: "Unbenanntes Spiel",
+                        gameName = session.game?.name ?: "Unbenanntes Spiel",
                         teams = teams,
                         allPlayers = players,
                         isLoading = false
