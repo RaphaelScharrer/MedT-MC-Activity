@@ -1,5 +1,6 @@
 package at.htl.activitiy_android.view.gameplay
 
+import android.content.Intent
 import android.media.AudioManager
 import android.media.ToneGenerator
 import androidx.compose.animation.*
@@ -15,12 +16,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.htl.activitiy_android.domain.model.WordCategory
+import at.htl.activitiy_android.view.playfield.GameBoardActivity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,6 +35,7 @@ fun GamePlayScreen(
     )
 ) {
     val state by vm.state.collectAsState()
+    val context = LocalContext.current
     var showRedScreen by remember { mutableStateOf(false) }
 
     // Load game data
@@ -135,6 +139,7 @@ fun GamePlayScreen(
 
                                 Spacer(Modifier.height(16.dp))
 
+                                /*
                                 Button(
                                     onClick = { vm.onEvent(GamePlayEvent.ResetForNextTurn) },
                                     colors = ButtonDefaults.buttonColors(
@@ -144,6 +149,26 @@ fun GamePlayScreen(
                                 ) {
                                     Text(
                                         text = "Nächste Runde",
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+
+                                 */
+                                Button(
+                                    onClick = {
+                                        val intent = Intent(context, GameBoardActivity::class.java)
+                                        context.startActivity(intent)
+                                    },
+                                    enabled = !state.isLoading,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color.White,
+                                        contentColor = Color(0xFFD32F2F)
+                                    )
+                                ) {
+                                    Text(
+                                        text = "Spielfeld",
+                                        //style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Bold
                                     )
                                 }

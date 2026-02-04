@@ -61,6 +61,7 @@ fun GameSummaryScreen(
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
+                    /*
                     Button(
                         onClick = onStartGame,
                         enabled = !state.isLoading && state.teams.isNotEmpty(),
@@ -76,6 +77,8 @@ fun GameSummaryScreen(
                         )
                     }
 
+                     */
+
                     Button(
                         onClick = {
                             val intent = Intent(context, GameBoardActivity::class.java)
@@ -84,11 +87,11 @@ fun GameSummaryScreen(
                         enabled = !state.isLoading,
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.secondary
+                            containerColor = MaterialTheme.colorScheme.primary
                         )
                     ) {
                         Text(
-                            text = "Spielfeld anzeigen",
+                            text = "Spielfeld",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )

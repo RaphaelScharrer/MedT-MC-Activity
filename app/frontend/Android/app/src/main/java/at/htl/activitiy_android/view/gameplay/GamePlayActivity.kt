@@ -23,7 +23,7 @@ class GamePlayActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     GamePlayScreen(
-                        gameId = gameId,
+                        gameId = 1,
                         onBack = { finish() }
                     )
                 }
