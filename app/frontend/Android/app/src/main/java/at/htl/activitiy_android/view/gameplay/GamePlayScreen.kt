@@ -101,8 +101,10 @@ fun GamePlayScreen(
                             Spacer(Modifier.height(8.dp))
 
                             // Word
+
                             Text(
-                                text = state.currentWord?.word ?: "",
+                                //text = state.currentWord?.word ?: "",
+                                text = "Los gehts!",
                                 style = MaterialTheme.typography.headlineLarge,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White,
@@ -258,23 +260,37 @@ fun GamePlayScreen(
                             Spacer(Modifier.height(24.dp))
 
                             Text(
-                                text = "Los geht's!",
-                                style = MaterialTheme.typography.headlineLarge,
-                                fontWeight = FontWeight.Bold
-                            )
-
-                            Spacer(Modifier.height(8.dp))
-
-                            Text(
+                                //text = "Los geht's!",
                                 text = when (state.currentCategory) {
                                     WordCategory.DRAW -> "Zeichne das Wort!"
                                     WordCategory.ACT -> "Stelle das Wort dar!"
                                     WordCategory.DESCRIBE -> "Erkläre das Wort!"
                                     null -> ""
                                 },
-                                style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                style = MaterialTheme.typography.headlineLarge,
+                                fontWeight = FontWeight.Bold
                             )
+
+
+                            Spacer(Modifier.height(8.dp))
+
+
+                            Text(
+                                /*
+                                text = when (state.currentCategory) {
+                                    WordCategory.DRAW -> "Zeichne das Wort:"
+                                    WordCategory.ACT -> "Stelle das Wort dar:"
+                                    WordCategory.DESCRIBE -> "Erkläre das Wort:"
+                                    null -> ""
+                                },
+                                 */
+                                text = state.currentWord?.word ?: "",
+                                //style = MaterialTheme.typography.titleMedium,
+                                style = MaterialTheme.typography.titleLarge ,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontWeight = FontWeight.Bold
+                            )
+
                         }
                     }
 
@@ -290,7 +306,7 @@ fun GamePlayScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Red.copy(alpha = 0.85f)),
+                    .background(Color.Red.copy(alpha = 0.70f)),
                 contentAlignment = Alignment.Center
             ) {
                 Column(

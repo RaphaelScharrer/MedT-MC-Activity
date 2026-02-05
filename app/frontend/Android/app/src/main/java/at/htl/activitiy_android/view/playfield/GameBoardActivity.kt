@@ -116,7 +116,7 @@ fun GameBoardScreen() {
                     )
                 ) {
                     Text(
-                        text = "Zum Gameplay",
+                        text = "Zum Gameplay", // TODO: SUche nutze text resourcen
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
