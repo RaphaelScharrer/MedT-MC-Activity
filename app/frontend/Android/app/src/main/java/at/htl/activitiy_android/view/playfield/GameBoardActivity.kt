@@ -52,7 +52,25 @@ fun GameBoardScreen() {
             factory = { ctx ->
                 GridLayout(ctx).apply {
                     columnCount = 3
-                    rowCount = 5
+                    rowCount = 6
+
+                    // Start-Feld
+                    val startField = android.widget.TextView(ctx).apply {
+                        layoutParams = GridLayout.LayoutParams().apply {
+                            width = 0
+                            height = 0
+                            columnSpec = GridLayout.spec(0, 3, 1f)
+                            rowSpec = GridLayout.spec(0, 1f)
+                            setMargins(8, 8, 8, 8)
+                        }
+                        text = "START"
+                        textSize = 24f
+                        gravity = android.view.Gravity.CENTER
+                        setTextColor(android.graphics.Color.parseColor("#1C1B1F"))  // onPrimaryContainer
+                        setBackgroundColor(android.graphics.Color.parseColor("#E8DEF8"))  // primaryContainer
+                        setPadding(16, 16, 16, 16)
+                    }
+                    addView(startField)
 
                     // 15 Felder erstellen
                     for (i in 0 until 15) {
@@ -85,6 +103,24 @@ fun GameBoardScreen() {
                         }
                         addView(imageView)
                     }
+
+                    // Ziel-Feld
+                    val goalField = android.widget.TextView(ctx).apply {
+                        layoutParams = GridLayout.LayoutParams().apply {
+                            width = 0
+                            height = 0
+                            columnSpec = GridLayout.spec(0, 3, 1f)
+                            rowSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
+                            setMargins(8, 8, 8, 8)
+                        }
+                        text = "ZIEL"
+                        textSize = 24f
+                        gravity = android.view.Gravity.CENTER
+                        setTextColor(android.graphics.Color.parseColor("#1C1B1F"))  // onPrimaryContainer
+                        setBackgroundColor(android.graphics.Color.parseColor("#E8DEF8"))  // primaryContainer
+                        setPadding(16, 16, 16, 16)
+                    }
+                    addView(goalField)
                 }
             },
             modifier = Modifier
