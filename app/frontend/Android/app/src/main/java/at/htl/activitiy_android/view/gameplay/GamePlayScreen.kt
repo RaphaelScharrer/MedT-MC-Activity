@@ -284,9 +284,9 @@ fun GamePlayScreen(
                             Text(
                                 //text = "Los geht's!",
                                 text = when (state.currentCategory) {
-                                    WordCategory.DRAW -> "Zeichne das Wort!"
-                                    WordCategory.ACT -> "Stelle das Wort dar!"
-                                    WordCategory.DESCRIBE -> "Erkläre das Wort!"
+                                    WordCategory.DRAW -> "Zeichne das Wort:"
+                                    WordCategory.ACT -> "Stelle das Wort dar:"
+                                    WordCategory.DESCRIBE -> "Erkläre das Wort:"
                                     null -> ""
                                 },
                                 style = MaterialTheme.typography.headlineLarge,
