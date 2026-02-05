@@ -16,7 +16,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import android.content.Intent
+import androidx.compose.foundation.Image
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import at.htl.activitiy_android.view.playfield.GameBoardActivity
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -76,7 +79,6 @@ fun GameSummaryScreen(
                             fontWeight = FontWeight.Bold
                         )
                     }
-
                      */
 
                     Button(
@@ -167,20 +169,12 @@ fun GameSummaryScreen(
                                     verticalAlignment = Alignment.CenterVertically,
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(40.dp)
-                                            .clip(CircleShape)
-                                            .background(team.color),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Text(
-                                            "${team.position + 1}",
-                                            color = MaterialTheme.colorScheme.onPrimary,
-                                            fontWeight = FontWeight.Bold,
-                                            style = MaterialTheme.typography.titleMedium
-                                        )
-                                    }
+                                    Image(
+                                        painter = painterResource(id = team.imageRes),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(28.dp),
+                                        contentScale = ContentScale.Fit
+                                    )
                                     Spacer(Modifier.width(12.dp))
                                     Column {
                                         Text(
@@ -209,11 +203,11 @@ fun GameSummaryScreen(
                                                 .padding(vertical = 4.dp),
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
-                                            Box(
-                                                modifier = Modifier
-                                                    .size(8.dp)
-                                                    .clip(CircleShape)
-                                                    .background(team.color)
+                                            Image(
+                                                painter = painterResource(id = team.imageRes),
+                                                contentDescription = null,
+                                                modifier = Modifier.size(18.dp),
+                                                contentScale = ContentScale.Fit
                                             )
                                             Spacer(Modifier.width(8.dp))
                                             Text(
