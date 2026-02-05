@@ -161,3 +161,11 @@ fun GameBoardScreen() {
         }
     }
 }
+
+
+/*
+zu beginn sollen die teams in form von deren bildern (p1.png - p4.png)
+auf dem start feld stehen, dann sollen sie aber das spielfeld abfahren
+
+ */
+
