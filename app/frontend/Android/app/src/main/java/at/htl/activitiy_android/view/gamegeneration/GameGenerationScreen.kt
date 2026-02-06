@@ -14,6 +14,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 @Composable
 fun GameGenerationScreen(
     onGameCreated: (Long) -> Unit,
+    onNameConfirmed: ((String) -> Unit)? = null,
     vm: GameGenerationViewModel = viewModel()
 ) {
     val state by vm.state.collectAsState()
@@ -84,7 +85,15 @@ fun GameGenerationScreen(
 
                         Button(
                             onClick = {
-                                vm.onEvent(GameGenerationEvent.CreateGame(onGameCreated))
+                                if (onNameConfirmed != null) {
+                                    // Nur Name lokal weitergeben, NICHT in DB speichern
+                                    val name = state.gameNameInput.trim()
+                                    if (name.isNotBlank()) {
+                                        onNameConfirmed(name)
+                                    }
+                                } else {
+                                    vm.onEvent(GameGenerationEvent.CreateGame(onGameCreated))
+                                }
                             },
                             enabled = !state.isLoading && state.gameNameInput.isNotBlank(),
                             modifier = Modifier.fillMaxWidth()

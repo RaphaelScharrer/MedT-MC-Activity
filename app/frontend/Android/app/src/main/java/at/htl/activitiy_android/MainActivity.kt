@@ -9,15 +9,13 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import at.htl.activitiy_android.data.repository.GameRepository
 import at.htl.activitiy_android.view.gamegeneration.GameGenerationScreen
 import at.htl.activitiy_android.view.gamegeneration.GameGenerationViewModel
+import at.htl.activitiy_android.view.gamemode.GameModeScreen
 import at.htl.activitiy_android.view.gameplay.GamePlayScreen
 import at.htl.activitiy_android.view.gamesummary.GameSummaryScreen
-import at.htl.activitiy_android.view.teamgeneration.TeamGenerationEvent
-import at.htl.activitiy_android.view.teamgeneration.TeamGenerationScreen
-import at.htl.activitiy_android.view.teamgeneration.TeamGenerationViewModel
-import at.htl.activitiy_android.view.teamgeneration.TeamGenerationViewModelFactory
-import at.htl.activitiy_android.view.teamselect.PlayerCreationScreen
+import at.htl.activitiy_android.view.playerteamsetup.PlayerTeamSetupScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,70 +32,46 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun AppNavigation() {
-    var currentScreen by remember { mutableStateOf<Screen>(Screen.GameGeneration) }
+    var currentScreen by remember { mutableStateOf<Screen>(Screen.GameMode) }
+    var currentGameName by remember { mutableStateOf("") }
     var currentGameId by remember { mutableStateOf<Long?>(null) }
-    var currentTeamCount by remember { mutableStateOf<Int?>(null) }
 
     when (currentScreen) {
+        Screen.GameMode -> {
+            GameModeScreen(
+                onLocalSelected = {
+                    currentScreen = Screen.GameGeneration
+                }
+            )
+        }
+
         Screen.GameGeneration -> {
             val gameVm: GameGenerationViewModel = viewModel()
 
-            // Only load if gameId exists and screen is visible
-            LaunchedEffect(currentGameId, currentScreen) {
-                if (currentScreen == Screen.GameGeneration && currentGameId != null) {
-                    gameVm.loadGame(currentGameId!!)
-                }
-            }
-
             GameGenerationScreen(
-                onGameCreated = { gameId ->
-                    currentGameId = gameId
-                    currentScreen = Screen.TeamGeneration
+                onGameCreated = { _ -> },
+                onNameConfirmed = { name ->
+                    // Spielname nur lokal merken, NICHT in DB speichern
+                    // Persistierung passiert erst im PlayerTeamSetup nach Bestätigung
+                    currentGameName = name
+                    currentScreen = Screen.PlayerTeamSetup
                 },
                 vm = gameVm
             )
         }
 
-        Screen.TeamGeneration -> {
-            currentGameId?.let { gameId ->
-                val teamVm: TeamGenerationViewModel = viewModel(
-                    key = "team_$gameId",  // Unique key per game
-                    factory = TeamGenerationViewModelFactory(gameId)
-                )
-
-                // Only load if teamCount exists
-                LaunchedEffect(currentTeamCount, currentScreen) {
-                    if (currentScreen == Screen.TeamGeneration && currentTeamCount != null) {
-                        teamVm.onEvent(TeamGenerationEvent.TeamCountChanged(currentTeamCount.toString()))
-                    }
+        Screen.PlayerTeamSetup -> {
+            PlayerTeamSetupScreen(
+                gameName = currentGameName,
+                onBack = {
+                    currentScreen = Screen.GameGeneration
+                },
+                onConfirmed = {
+                    // gameId aus Repository holen (wurde beim Persistieren gesetzt)
+                    currentGameId = GameRepository.getCurrentGameId()
+                    currentScreen = Screen.GameSummary
                 }
-
-                TeamGenerationScreen(
-                    gameId = gameId,
-                    onTeamsCreated = {
-                        currentTeamCount = teamVm.state.value.teamCountInput.toIntOrNull()
-                        currentScreen = Screen.PlayerCreation
-                    },
-                    onBack = {
-                        currentScreen = Screen.GameGeneration
-                    },
-                    vm = teamVm
-                )
-            }
-        }
-
-        Screen.PlayerCreation -> {
-            currentGameId?.let { gameId ->
-                PlayerCreationScreen(
-                    gameId = gameId,
-                    onBack = {
-                        currentScreen = Screen.TeamGeneration
-                    },
-                    onFinish = {
-                        currentScreen = Screen.GameSummary
-                    }
-                )
-            }
+            )
         }
 
         Screen.GameSummary -> {
@@ -105,7 +79,8 @@ fun AppNavigation() {
                 GameSummaryScreen(
                     gameId = gameId,
                     onBack = {
-                        currentScreen = Screen.PlayerCreation
+                        // Ab hier KEIN Zurück zur Teamerstellung möglich
+                        // onBack bleibt leer - kein Zurücknavigieren
                     },
                     onStartGame = {
                         currentScreen = Screen.GamePlay
@@ -128,9 +103,9 @@ fun AppNavigation() {
 }
 
 sealed class Screen {
+    data object GameMode : Screen()
     data object GameGeneration : Screen()
-    data object TeamGeneration : Screen()
-    data object PlayerCreation : Screen()
+    data object PlayerTeamSetup : Screen()
     data object GameSummary : Screen()
     data object GamePlay : Screen()
 }

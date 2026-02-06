@@ -42,15 +42,7 @@ fun GameSummaryScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Spiel-Übersicht") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Zurück"
-                        )
-                    }
-                }
+                title = { Text("Spiel-Übersicht") }
             )
         },
         bottomBar = {
