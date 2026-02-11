@@ -86,33 +86,25 @@ fun GamePlayScreen(
                                 .padding(20.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            // Category label
-                            val categoryLabel = when (state.currentCategory) {
-                                WordCategory.DRAW -> "ZEICHNEN"
-                                WordCategory.ACT -> "PANTOMIME"
-                                WordCategory.DESCRIBE -> "ERKLÄREN"
-                                null -> ""
-                            }
-                            Text(
-                                text = categoryLabel,
-                                style = MaterialTheme.typography.labelLarge,
-                                color = Color.White.copy(alpha = 0.8f)
-                            )
+
 
                             Spacer(Modifier.height(8.dp))
 
                             // Word
+                            if (!state.timeUp) {
+                                Text(
+                                    //text = state.currentWord?.word ?: "",
+                                    text = "Los gehts!",
+                                    style = MaterialTheme.typography.headlineLarge,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White,
+                                    textAlign = TextAlign.Center
+                                )
 
-                            Text(
-                                //text = state.currentWord?.word ?: "",
-                                text = "Los gehts!",
-                                style = MaterialTheme.typography.headlineLarge,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White,
-                                textAlign = TextAlign.Center
-                            )
+                                Spacer(Modifier.height(16.dp))
+                            }
 
-                            Spacer(Modifier.height(16.dp))
+
 
                             // Timer
                             Box(
@@ -132,33 +124,37 @@ fun GamePlayScreen(
 
                             Spacer(Modifier.height(16.dp))
 
-                            Button(
-                                onClick = {
-                                    val intent = Intent(context, GameBoardActivity::class.java)
-                                    context.startActivity(intent)
-                                },
-                                enabled = !state.isLoading,
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.White,
-                                    contentColor = MaterialTheme.colorScheme.primary
-                                )
-                            ) {
-                                Text(
-                                    text = "Erraten",
-                                    style = MaterialTheme.typography.titleLarge,
-                                    fontWeight = FontWeight.Bold
-                                )
+                            if (!state.timeUp) {
+                                Button(
+                                    onClick = {
+                                        val intent = Intent(context, GameBoardActivity::class.java)
+                                        context.startActivity(intent)
+                                    },
+                                    enabled = !state.isLoading,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color.White,
+                                        contentColor = MaterialTheme.colorScheme.primary
+                                    )
+                                ) {
+                                    Text(
+                                        text = "Erraten",
+                                        style = MaterialTheme.typography.titleLarge,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
                             }
+
 
                             // Time up message
                             if (state.timeUp) {
                                 Spacer(Modifier.height(16.dp))
                                 Text(
                                     text = "ZEIT ABGELAUFEN!",
-                                    style = MaterialTheme.typography.titleLarge,
+                                    style = MaterialTheme.typography.headlineLarge,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color.White
+                                    color = Color.White,
+                                    textAlign = TextAlign.Center
                                 )
 
                                 Spacer(Modifier.height(16.dp))
@@ -193,6 +189,7 @@ fun GamePlayScreen(
                                     Text(
                                         text = "Spielfeld",
                                         //style = MaterialTheme.typography.titleMedium,
+                                        style = MaterialTheme.typography.titleLarge,
                                         fontWeight = FontWeight.Bold
                                     )
                                 }
@@ -280,6 +277,20 @@ fun GamePlayScreen(
                             )
 
                             Spacer(Modifier.height(24.dp))
+
+                            // Category label
+                            val categoryLabel = when (state.currentCategory) {
+                                WordCategory.DRAW -> "ZEICHNEN"
+                                WordCategory.ACT -> "PANTOMIME"
+                                WordCategory.DESCRIBE -> "ERKLÄREN"
+                                null -> ""
+                            }
+                            Text(
+                                text = categoryLabel,
+                                style = MaterialTheme.typography.titleLarge ,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontWeight = FontWeight.Bold
+                            )
 
                             Text(
                                 //text = "Los geht's!",

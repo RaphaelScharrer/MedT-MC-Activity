@@ -359,12 +359,14 @@ private fun PlayerTeamRow(
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Teamfarbe als Kreis
+            
             Box(
                 modifier = Modifier
                     .size(24.dp)
                     .clip(CircleShape)
                     .background(teamColor)
             )
+
 
             Spacer(Modifier.width(12.dp))
 
