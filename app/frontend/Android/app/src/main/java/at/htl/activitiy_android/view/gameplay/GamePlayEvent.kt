@@ -5,6 +5,7 @@ sealed interface GamePlayEvent {
     data class SelectDifficulty(val points: Int) : GamePlayEvent
     data object StartTimer : GamePlayEvent
     data object TimerTick : GamePlayEvent
+    data object WordGuessed : GamePlayEvent
     data object ResetForNextTurn : GamePlayEvent
     data object ClearError : GamePlayEvent
 }

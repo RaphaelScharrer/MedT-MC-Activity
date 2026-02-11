@@ -18,7 +18,9 @@ data class GamePlayState(
     val phase: GamePhase = GamePhase.WORD_SELECTION,
     val isLoading: Boolean = false,
     val error: String? = null,
-    val gameName: String = ""
+    val gameName: String = "",
+    val navigateToBoard: Boolean = false,
+    val pointsAwarded: Int = 0
 )
 
 enum class GamePhase {

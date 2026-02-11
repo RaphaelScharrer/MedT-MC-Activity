@@ -20,6 +20,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import at.htl.activitiy_android.data.repository.GameRepository
 import at.htl.activitiy_android.view.playfield.GameBoardActivity
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -75,7 +76,14 @@ fun GameSummaryScreen(
 
                     Button(
                         onClick = {
+                            // Initialize board positions if not already done
+                            val teams = GameRepository.getTeams()
+                            if (GameRepository.currentSession.value.teamBoardPositions.isEmpty()) {
+                                GameRepository.initializeBoardPositions(teams)
+                            }
+
                             val intent = Intent(context, GameBoardActivity::class.java)
+                            intent.putExtra(GameBoardActivity.EXTRA_GAME_ID, gameId)
                             context.startActivity(intent)
                         },
                         enabled = !state.isLoading,
@@ -139,7 +147,7 @@ fun GameSummaryScreen(
                     // Teams & Players
                     item {
                         Text(
-                            "Teams & Spieler (${state.teams.size} Teams, ${state.allPlayers.size} Spieler)",
+                            "Teams & Spieler",
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold
                         )

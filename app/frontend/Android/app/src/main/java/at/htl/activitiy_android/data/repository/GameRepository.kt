@@ -207,6 +207,59 @@ object GameRepository {
 
     fun getUsedWordCount(): Int = _currentSession.value.usedWordIds.size
 
+    // ========== BOARD POSITION OPERATIONS ==========
+
+    fun initializeBoardPositions(teams: List<Team>) {
+        _currentSession.update { session ->
+            val positions = teams.associate { (it.id ?: 0L) to 0 }
+            session.copy(teamBoardPositions = positions)
+        }
+    }
+
+    fun getTeamBoardPosition(teamId: Long): Int {
+        return _currentSession.value.teamBoardPositions[teamId] ?: 0
+    }
+
+    fun advanceTeam(teamId: Long, points: Int) {
+        _currentSession.update { session ->
+            val currentPos = session.teamBoardPositions[teamId] ?: 0
+            val newPos = (currentPos + points).coerceAtMost(16)
+            val newPositions = session.teamBoardPositions + (teamId to newPos)
+            val newFinished = if (newPos >= 16) session.finishedTeamIds + teamId else session.finishedTeamIds
+            session.copy(
+                teamBoardPositions = newPositions,
+                finishedTeamIds = newFinished
+            )
+        }
+    }
+
+    fun isTeamFinished(teamId: Long): Boolean {
+        return teamId in _currentSession.value.finishedTeamIds
+    }
+
+    fun getActiveTeams(): List<Team> {
+        val finished = _currentSession.value.finishedTeamIds
+        return _currentSession.value.teams.filter { it.id !in finished }
+    }
+
+    // ========== TURN MANAGEMENT ==========
+
+    fun getCurrentTeamIndex(): Int = _currentSession.value.currentTeamIndex
+
+    fun setCurrentTeamIndex(index: Int) {
+        _currentSession.update { it.copy(currentTeamIndex = index) }
+    }
+
+    fun advanceToNextTeam(): Team? {
+        val session = _currentSession.value
+        val activeTeams = session.teams.filter { it.id !in session.finishedTeamIds }
+        if (activeTeams.isEmpty()) return null
+
+        val nextIndex = (session.currentTeamIndex + 1) % activeTeams.size
+        _currentSession.update { it.copy(currentTeamIndex = nextIndex) }
+        return activeTeams.getOrNull(nextIndex)
+    }
+
     // ========== SESSION CLEANUP ==========
 
     fun clearSession() {
@@ -236,5 +289,7 @@ data class GameSession(
     val teams: List<Team> = emptyList(),
     val players: List<Player> = emptyList(),
     val usedWordIds: Set<Long> = emptySet(),
-    val currentTeamIndex: Int = 0
+    val currentTeamIndex: Int = 0,
+    val teamBoardPositions: Map<Long, Int> = emptyMap(),
+    val finishedTeamIds: Set<Long> = emptySet()
 )

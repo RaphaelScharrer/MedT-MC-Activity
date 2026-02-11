@@ -33,6 +33,14 @@ data class Team(
 
 
 
+    val colorName: String
+        get() = when (position % 4) {
+            0 -> "Rot"
+            1 -> "Blau"
+            2 -> "Grün"
+            else -> "Gelb"
+        }
+
     val label: String
-        get() = "Team ${position + 1}"
+        get() = "Team - $colorName"
 }

@@ -3,8 +3,10 @@ package at.htl.activitiy_android.view.gameplay
 import android.content.Intent
 import android.media.AudioManager
 import android.media.ToneGenerator
+import androidx.activity.ComponentActivity
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -17,7 +19,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -42,6 +46,16 @@ fun GamePlayScreen(
     // Load game data
     LaunchedEffect(Unit) {
         vm.onEvent(GamePlayEvent.LoadGameData)
+    }
+
+    // Navigate back to board when word is guessed
+    LaunchedEffect(state.navigateToBoard) {
+        if (state.navigateToBoard) {
+            val intent = Intent(context, GameBoardActivity::class.java)
+            intent.putExtra(GameBoardActivity.EXTRA_GAME_ID, gameId)
+            context.startActivity(intent)
+            (context as? ComponentActivity)?.finish()
+        }
     }
 
     // Show red screen and play sound when time is up
@@ -87,13 +101,11 @@ fun GamePlayScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
 
-
                             Spacer(Modifier.height(8.dp))
 
                             // Word
                             if (!state.timeUp) {
                                 Text(
-                                    //text = state.currentWord?.word ?: "",
                                     text = "Los gehts!",
                                     style = MaterialTheme.typography.headlineLarge,
                                     fontWeight = FontWeight.Bold,
@@ -103,8 +115,6 @@ fun GamePlayScreen(
 
                                 Spacer(Modifier.height(16.dp))
                             }
-
-
 
                             // Timer
                             Box(
@@ -125,10 +135,10 @@ fun GamePlayScreen(
                             Spacer(Modifier.height(16.dp))
 
                             if (!state.timeUp) {
+                                // "Erraten" button - awards points and navigates back
                                 Button(
                                     onClick = {
-                                        val intent = Intent(context, GameBoardActivity::class.java)
-                                        context.startActivity(intent)
+                                        vm.onEvent(GamePlayEvent.WordGuessed)
                                     },
                                     enabled = !state.isLoading,
                                     modifier = Modifier.fillMaxWidth(),
@@ -145,7 +155,6 @@ fun GamePlayScreen(
                                 }
                             }
 
-
                             // Time up message
                             if (state.timeUp) {
                                 Spacer(Modifier.height(16.dp))
@@ -159,25 +168,14 @@ fun GamePlayScreen(
 
                                 Spacer(Modifier.height(16.dp))
 
-                                /*
-                                Button(
-                                    onClick = { vm.onEvent(GamePlayEvent.ResetForNextTurn) },
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color.White,
-                                        contentColor = Color(0xFFD32F2F)
-                                    )
-                                ) {
-                                    Text(
-                                        text = "Nächste Runde",
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
-
-                                 */
+                                // "Spielfeld" button - no points, advance turn, go back
                                 Button(
                                     onClick = {
+                                        vm.onEvent(GamePlayEvent.ResetForNextTurn)
                                         val intent = Intent(context, GameBoardActivity::class.java)
+                                        intent.putExtra(GameBoardActivity.EXTRA_GAME_ID, gameId)
                                         context.startActivity(intent)
+                                        (context as? ComponentActivity)?.finish()
                                     },
                                     enabled = !state.isLoading,
                                     modifier = Modifier.fillMaxWidth(),
@@ -188,7 +186,6 @@ fun GamePlayScreen(
                                 ) {
                                     Text(
                                         text = "Spielfeld",
-                                        //style = MaterialTheme.typography.titleMedium,
                                         style = MaterialTheme.typography.titleLarge,
                                         fontWeight = FontWeight.Bold
                                     )
@@ -239,6 +236,27 @@ fun GamePlayScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
+                            // Show which team's turn it is
+                            state.currentTeam?.let { team ->
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = team.imageRes),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(32.dp),
+                                        contentScale = ContentScale.Fit
+                                    )
+                                    Spacer(Modifier.width(8.dp))
+                                    Text(
+                                        text = "${team.label} ist dran",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                                Spacer(Modifier.height(24.dp))
+                            }
+
                             // Word Card
                             state.currentCategory?.let { category ->
                                 WordCard(
@@ -287,13 +305,12 @@ fun GamePlayScreen(
                             }
                             Text(
                                 text = categoryLabel,
-                                style = MaterialTheme.typography.titleLarge ,
+                                style = MaterialTheme.typography.titleLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 fontWeight = FontWeight.Bold
                             )
 
                             Text(
-                                //text = "Los geht's!",
                                 text = when (state.currentCategory) {
                                     WordCategory.DRAW -> "Zeichne das Wort:"
                                     WordCategory.ACT -> "Stelle das Wort dar:"
@@ -304,26 +321,14 @@ fun GamePlayScreen(
                                 fontWeight = FontWeight.Bold
                             )
 
-
                             Spacer(Modifier.height(8.dp))
 
-
                             Text(
-                                /*
-                                text = when (state.currentCategory) {
-                                    WordCategory.DRAW -> "Zeichne das Wort:"
-                                    WordCategory.ACT -> "Stelle das Wort dar:"
-                                    WordCategory.DESCRIBE -> "Erkläre das Wort:"
-                                    null -> ""
-                                },
-                                 */
                                 text = state.currentWord?.word ?: "",
-                                //style = MaterialTheme.typography.titleMedium,
-                                style = MaterialTheme.typography.titleLarge ,
+                                style = MaterialTheme.typography.titleLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 fontWeight = FontWeight.Bold
                             )
-
                         }
                     }
 

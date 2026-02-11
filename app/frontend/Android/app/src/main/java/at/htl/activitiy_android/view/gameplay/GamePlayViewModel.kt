@@ -29,6 +29,7 @@ class GamePlayViewModel(
             is GamePlayEvent.SelectDifficulty -> selectWordByDifficulty(event.points)
             GamePlayEvent.StartTimer -> startTimer()
             GamePlayEvent.TimerTick -> timerTick()
+            GamePlayEvent.WordGuessed -> wordGuessed()
             GamePlayEvent.ResetForNextTurn -> resetForNextTurn()
             GamePlayEvent.ClearError -> _state.update { it.copy(error = null) }
         }
@@ -45,11 +46,17 @@ class GamePlayViewModel(
 
                 // Get data from repository
                 val session = repository.currentSession.value
-                val teams = repository.getTeams().filter { it.gameId == gameId }
+                val allTeams = repository.getTeams().filter { it.gameId == gameId }
+                val activeTeams = allTeams.filter { it.id !in session.finishedTeamIds }
 
-                // Determine category based on first team's position
-                val firstTeam = teams.firstOrNull()
-                val category = getCategoryForTeamPosition(firstTeam?.position ?: 0)
+                // Read current team index from repository (persists across Activity transitions)
+                val teamIndex = repository.getCurrentTeamIndex()
+                    .coerceIn(0, (activeTeams.size - 1).coerceAtLeast(0))
+                val currentTeam = activeTeams.getOrNull(teamIndex)
+
+                // Determine category based on team's board position
+                val boardPos = currentTeam?.id?.let { repository.getTeamBoardPosition(it) } ?: 0
+                val category = getCategoryForBoardPosition(boardPos)
 
                 // Get available words (filters out already used words)
                 val availableWords = repository.getAvailableWords()
@@ -58,9 +65,9 @@ class GamePlayViewModel(
                 _state.update {
                     it.copy(
                         gameName = session.game?.name ?: "Spiel",
-                        teams = teams,
-                        currentTeam = firstTeam,
-                        currentTeamIndex = 0,
+                        teams = activeTeams,
+                        currentTeam = currentTeam,
+                        currentTeamIndex = teamIndex,
                         currentCategory = category,
                         availableWords = categoryWords,
                         isLoading = false,
@@ -78,11 +85,21 @@ class GamePlayViewModel(
         }
     }
 
-    private fun getCategoryForTeamPosition(position: Int): WordCategory {
-        return when (position % 3) {
-            0 -> WordCategory.DRAW
-            1 -> WordCategory.ACT
-            else -> WordCategory.DESCRIBE
+    private fun getCategoryForBoardPosition(boardPosition: Int): WordCategory {
+        if (boardPosition <= 0) {
+            // On START -> Erklären
+            return WordCategory.DESCRIBE
+        }
+        // boardPosition 1-15 maps to field index 0-14
+        // Must match GameBoardActivity field colors exactly:
+        // fieldIndex % 3 == 0 -> Rot -> Pantomime (ACT)
+        // fieldIndex % 3 == 1 -> Blau -> Erklären (DESCRIBE)
+        // fieldIndex % 3 == 2 -> Grün -> Zeichnen (DRAW)
+        val fieldIndex = boardPosition - 1
+        return when (fieldIndex % 3) {
+            0 -> WordCategory.ACT
+            1 -> WordCategory.DESCRIBE
+            else -> WordCategory.DRAW
         }
     }
 
@@ -158,32 +175,32 @@ class GamePlayViewModel(
         }
     }
 
-    private fun resetForNextTurn() {
+    private fun wordGuessed() {
         timerJob?.cancel()
-
         val s = _state.value
-        val nextIndex = (s.currentTeamIndex + 1) % s.teams.size
-        val nextTeam = s.teams.getOrNull(nextIndex)
-        val nextCategory = getCategoryForTeamPosition(nextTeam?.position ?: 0)
+        val points = s.selectedDifficulty ?: return
+        val teamId = s.currentTeam?.id ?: return
 
-        // Get available words from repository (automatically excludes used words)
-        val availableWords = repository.getAvailableWords()
-        val categoryWords = availableWords.filter { it.category == nextCategory }
+        // Award points: advance team on board
+        repository.advanceTeam(teamId, points)
+
+        // Advance to next active team for the next round
+        repository.advanceToNextTeam()
 
         _state.update {
             it.copy(
-                currentTeamIndex = nextIndex,
-                currentTeam = nextTeam,
-                currentCategory = nextCategory,
-                currentWord = null,
-                selectedDifficulty = null,
-                availableWords = categoryWords,
-                timerSeconds = 10,  // 10 seconds for testing
                 timerRunning = false,
-                timeUp = false,
-                phase = GamePhase.WORD_SELECTION
+                pointsAwarded = points,
+                navigateToBoard = true
             )
         }
+    }
+
+    private fun resetForNextTurn() {
+        timerJob?.cancel()
+
+        // Advance to next active team (no points awarded)
+        repository.advanceToNextTeam()
     }
 
     override fun onCleared() {
