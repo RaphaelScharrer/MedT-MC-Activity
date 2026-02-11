@@ -1,6 +1,7 @@
 package at.htl.activitiy_android.view.playerteamsetup
 
 import androidx.compose.animation.*
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,10 +17,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.delay
+import at.htl.activitiy_android.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -339,6 +343,13 @@ private fun PlayerTeamRow(
         2 -> Color(0xFF43A047) // Grün
         else -> Color(0xFFFDD835) // Gelb
     }
+    val teamColorImage = when (player.teamPosition % 4) {
+        0 -> R.drawable.p1
+        1 -> R.drawable.p2
+        2 -> R.drawable.p3
+        else -> R.drawable.p4
+    }
+
 
     val teamName = when (player.teamPosition % 4) {
         0 -> "Rot"
@@ -359,13 +370,23 @@ private fun PlayerTeamRow(
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Teamfarbe als Kreis
-            
+/*
             Box(
                 modifier = Modifier
                     .size(24.dp)
                     .clip(CircleShape)
                     .background(teamColor)
             )
+
+ */
+            Image(
+                painter = painterResource(id = teamColorImage),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp),
+                contentScale = ContentScale.Fit
+            )
+
+
 
 
             Spacer(Modifier.width(12.dp))
