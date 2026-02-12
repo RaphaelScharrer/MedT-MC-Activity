@@ -20,10 +20,14 @@ import at.htl.activitiy_android.view.playerteamsetup.PlayerTeamSetupScreen
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Prüfe ob wir zum GameMode zurücksetzen sollen
+        val resetToGameMode = intent.getBooleanExtra("RESET_TO_GAME_MODE", false)
+
         setContent {
             MaterialTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    AppNavigation()
+                    AppNavigation(resetToGameMode = resetToGameMode)
                 }
             }
         }
@@ -31,10 +35,23 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun AppNavigation() {
-    var currentScreen by remember { mutableStateOf<Screen>(Screen.GameMode) }
+fun AppNavigation(resetToGameMode: Boolean = false) {
+    var currentScreen by remember {
+        mutableStateOf<Screen>(
+            if (resetToGameMode) Screen.GameMode else Screen.GameMode
+        )
+    }
     var currentGameName by remember { mutableStateOf("") }
     var currentGameId by remember { mutableStateOf<Long?>(null) }
+
+    // Reset bei Bedarf
+    LaunchedEffect(resetToGameMode) {
+        if (resetToGameMode) {
+            currentScreen = Screen.GameMode
+            currentGameName = ""
+            currentGameId = null
+        }
+    }
 
     when (currentScreen) {
         Screen.GameMode -> {

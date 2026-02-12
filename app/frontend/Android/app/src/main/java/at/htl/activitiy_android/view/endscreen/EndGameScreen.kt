@@ -1,5 +1,6 @@
 package at.htl.activitiy_android.view.endscreen
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -19,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
+import at.htl.activitiy_android.MainActivity
 import at.htl.activitiy_android.data.repository.GameRepository
 import at.htl.activitiy_android.domain.model.Player
 import at.htl.activitiy_android.domain.model.Team
@@ -87,6 +90,7 @@ fun EndGameContent(
     vm: EndGameViewModel = viewModel(factory = EndGameViewModelFactory())
 ) {
     val state by vm.state.collectAsState()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         vm.loadFinalRankings()
@@ -107,6 +111,7 @@ fun EndGameContent(
 
         // Rankings
         LazyColumn(
+            modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
@@ -212,6 +217,28 @@ fun EndGameContent(
                     }
                 }
             }
+        }
+
+        // Button zum GameModeScreen
+        Spacer(Modifier.height(16.dp))
+        Button(
+            onClick = {
+                val intent = Intent(context, MainActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                    putExtra("RESET_TO_GAME_MODE", true)
+                }
+                context.startActivity(intent)
+                (context as? ComponentActivity)?.finish()
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+        ) {
+            Text(
+                text = "Neues Spiel starten",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }
