@@ -354,10 +354,10 @@ private fun PlayerTeamRow(
 
 
     val teamName = when (player.teamPosition % 4) {
-        0 -> "Rot"
-        1 -> "Blau"
-        2 -> "Grün"
-        else -> "Gelb"
+        0 -> stringResource(R.string.red)
+        1 -> stringResource(R.string.blue)
+        2 -> stringResource(R.string.green)
+        else -> stringResource(R.string.yellow)
     }
 
     Surface(

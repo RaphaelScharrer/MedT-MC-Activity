@@ -5,7 +5,7 @@
     <string name="gamemode_local">Local</string>
     <string name="gamegeneration_new_game">Create new Game</string>
     <string name="gamegeneration_name_game">Give the game a name</string>
-    <string name="gamegeneration_input_game_name">Game name</string>
+    <string name="input_game_name">Game name</string>
     <string name="gamegeneration_button_next">Next</string>
     <string name="playerteamsetup_player_team">Player and Teams</string>
     <string name="playerteamsetup_add_player">Create player</string>
@@ -21,6 +21,16 @@
     <string name="playerteamsetup_popup_nochanges">Are you happy with the teams? They cannot be changed once the game starts.</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="hellosagen">geg</string>
+    <string name="red">red</string>
+    <string name="blue">blue</string>
+    <string name="yellow">yellow</string>
+    <string name="green">green</string>
+    <string name="gamesummary_overview">Game-Overview</string>
+    <string name="gamesummary_teamsandplayers">Teams and Players</string>
+    <string name="gamesummary_teamsummarycolor">Team</string>
+    <string name="gamesummary_playerperteam">Players</string>
+    <string name="gamesummary_startgame">Start game</string>
+    <string name="gamesummary_points">pts.</string>
+    <string name="gamesummary_noplayersinteam">No players in this Team.</string>
 
 </resources>

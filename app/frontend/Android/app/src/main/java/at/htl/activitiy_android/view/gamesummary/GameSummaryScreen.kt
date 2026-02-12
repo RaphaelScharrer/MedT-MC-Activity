@@ -20,6 +20,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import at.htl.activitiy_android.R
 import at.htl.activitiy_android.data.repository.GameRepository
 import at.htl.activitiy_android.view.playfield.GameBoardActivity
 
@@ -43,7 +45,7 @@ fun GameSummaryScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Spiel-Übersicht") }
+                title = { Text(text = stringResource(R.string.gamesummary_overview)) }
             )
         },
         bottomBar = {
@@ -93,7 +95,7 @@ fun GameSummaryScreen(
                         )
                     ) {
                         Text(
-                            text = "Spielfeld",
+                            text = stringResource(R.string.gamesummary_startgame),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
@@ -129,7 +131,7 @@ fun GameSummaryScreen(
                                 modifier = Modifier.padding(20.dp)
                             ) {
                                 Text(
-                                    "Spielname",
+                                    text = stringResource(R.string.input_game_name),
                                     style = MaterialTheme.typography.labelMedium,
                                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
                                 )
@@ -147,7 +149,7 @@ fun GameSummaryScreen(
                     // Teams & Players
                     item {
                         Text(
-                            "Teams & Spieler",
+                            text = stringResource(R.string.gamesummary_teamsandplayers),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold
                         )
@@ -178,12 +180,12 @@ fun GameSummaryScreen(
                                     Spacer(Modifier.width(12.dp))
                                     Column {
                                         Text(
-                                            team.label,
+                                            text = team.label + " jaha",
                                             style = MaterialTheme.typography.titleLarge,
                                             fontWeight = FontWeight.Bold
                                         )
                                         Text(
-                                            "${teamPlayers.size} Spieler",
+                                            "${teamPlayers.size} ${stringResource(R.string.gamesummary_playerperteam)}",
                                             style = MaterialTheme.typography.bodySmall,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                                         )
@@ -216,7 +218,7 @@ fun GameSummaryScreen(
                                             )
                                             Spacer(Modifier.weight(1f))
                                             Text(
-                                                "${player.pointsEarned} Pkt",
+                                                "${player.pointsEarned} ${stringResource(R.string.gamesummary_points)}",
                                                 style = MaterialTheme.typography.bodyMedium,
                                                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                                             )
@@ -225,7 +227,7 @@ fun GameSummaryScreen(
                                 } else {
                                     Spacer(Modifier.height(8.dp))
                                     Text(
-                                        "Keine Spieler in diesem Team",
+                                        text = stringResource(R.string.gamesummary_noplayersinteam),
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                                         modifier = Modifier.padding(vertical = 8.dp)

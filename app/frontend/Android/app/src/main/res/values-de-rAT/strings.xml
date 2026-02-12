@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Activitiy-Android</string>
+    <string name="To_Gameplay">Zum Spiel</string>
+    // allgemeine sachen
+    <string name="yes">Ja</string>
+    <string name="no">Nein</string>
+    <string name="red">Rot</string>
+    <string name="blue">Blau</string>
+    <string name="yellow">Gelb</string>
+    <string name="green">Grün</string>
     // gamemode
     <string name="gamemode_choose_modus">Spielmodus wählen</string>
     <string name="gamemode_local">Lokal</string>
     //game generation
     <string name="gamegeneration_new_game">Neues Spiel erstellen</string>
     <string name="gamegeneration_name_game">Gib deinem Spiel einen Namen</string>
-    <string name="gamegeneration_input_game_name">Spielname</string>
+    <string name="input_game_name">Spielname</string>
     <string name="gamegeneration_button_next">Weiter</string>
     //player team setup
     <string name="playerteamsetup_player_team">Spieler und Teams</string>
@@ -23,8 +31,14 @@
     //player team setup popup
     <string name="playerteamsetup_popup_approveteams">Teams bestätigen</string>
     <string name="playerteamsetup_popup_nochanges">Bist du zufrieden mit den Teams? Im Spiel können Sie nicht mehr geändert werden.</string>
-    <string name="yes">Ja</string>
-    <string name="no">Nein</string>
-    <string name="hellosagen">Halloo</string>
-    <string name="To_Gameplay">Zum Spiel</string>
+    //game summary screen
+    <string name="gamesummary_overview">Spiel-Übersicht</string>
+    <string name="gamesummary_teamsandplayers">Teams und Spieler</string>
+    <string name="gamesummary_teamsummarycolor">Team</string>
+    <string name="gamesummary_playerperteam">Spieler</string>
+    <string name="gamesummary_points">Pkt.</string>
+    <string name="gamesummary_startgame">Spiel starten</string>
+    <string name="gamesummary_noplayersinteam">Keine Spieler in diesem Team</string>
+
+
 </resources>
