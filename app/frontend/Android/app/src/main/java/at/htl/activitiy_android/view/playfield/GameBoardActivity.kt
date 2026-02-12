@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -20,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.htl.activitiy_android.R
 import at.htl.activitiy_android.domain.model.Team
@@ -58,9 +60,18 @@ fun GameBoardScreen(
 ) {
     val state by vm.state.collectAsState()
     val context = LocalContext.current
+    var selectedTeam by remember { mutableStateOf<Team?>(null) }
 
     LaunchedEffect(Unit) {
         vm.loadBoardState()
+    }
+
+    // Team Info Dialog
+    selectedTeam?.let { team ->
+        TeamInfoDialog(
+            team = team,
+            onDismiss = { selectedTeam = null }
+        )
     }
 
     Column(
@@ -78,6 +89,7 @@ fun GameBoardScreen(
                 teamsOnStart = state.teams.filter {
                     (state.teamBoardPositions[it.id] ?: 0) == 0
                 },
+                onTeamClick = { selectedTeam = it },
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
@@ -103,6 +115,7 @@ fun GameBoardScreen(
                         GameField(
                             fieldIndex = fieldIndex,
                             teamsOnField = teamsOnField,
+                            onTeamClick = { selectedTeam = it },
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxHeight()
@@ -117,6 +130,7 @@ fun GameBoardScreen(
                 teamsAtGoal = state.teams.filter {
                     (state.teamBoardPositions[it.id] ?: 0) >= 16
                 },
+                onTeamClick = { selectedTeam = it },
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
@@ -163,8 +177,123 @@ fun GameBoardScreen(
 }
 
 @Composable
+fun TeamInfoDialog(
+    team: Team,
+    onDismiss: () -> Unit
+) {
+    val repository = at.htl.activitiy_android.data.repository.GameRepository
+
+    // Load players based on playerIds from team
+    val players = remember(team.id) {
+        val playerIds = team.playerIds ?: emptyList()
+        playerIds.mapNotNull { playerId ->
+            repository.currentSession.value.players.find { it.id == playerId }
+        }
+    }
+
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Team Icon
+                Image(
+                    painter = painterResource(id = team.imageRes),
+                    contentDescription = team.label,
+                    modifier = Modifier.size(80.dp),
+                    contentScale = ContentScale.Fit
+                )
+
+                // Team Name
+                Text(
+                    text = team.label,
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                HorizontalDivider()
+
+                // Team Members
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "Teammitglieder:",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+
+                    if (players.isEmpty()) {
+                        Text(
+                            text = "Keine Spieler im Team",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    } else {
+                        players.forEach { player ->
+                            PlayerItem(playerName = player.name)
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Close Button
+                TextButton(
+                    onClick = onDismiss,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Schließen")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun PlayerItem(playerName: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(8.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(4.dp)
+                )
+        )
+        Spacer(modifier = Modifier.width(12.dp))
+        Text(
+            text = playerName,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+    }
+}
+
+@Composable
 fun StartField(
     teamsOnStart: List<Team>,
+    onTeamClick: (Team) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -194,7 +323,9 @@ fun StartField(
                         Image(
                             painter = painterResource(id = team.imageRes),
                             contentDescription = team.label,
-                            modifier = Modifier.size(28.dp),
+                            modifier = Modifier
+                                .size(28.dp)
+                                .clickable { onTeamClick(team) },
                             contentScale = ContentScale.Fit
                         )
                         Spacer(Modifier.width(4.dp))
@@ -208,6 +339,7 @@ fun StartField(
 @Composable
 fun GoalField(
     teamsAtGoal: List<Team>,
+    onTeamClick: (Team) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -237,7 +369,9 @@ fun GoalField(
                         Image(
                             painter = painterResource(id = team.imageRes),
                             contentDescription = team.label,
-                            modifier = Modifier.size(28.dp),
+                            modifier = Modifier
+                                .size(28.dp)
+                                .clickable { onTeamClick(team) },
                             contentScale = ContentScale.Fit
                         )
                         Spacer(Modifier.width(4.dp))
@@ -252,6 +386,7 @@ fun GoalField(
 fun GameField(
     fieldIndex: Int,
     teamsOnField: List<Team>,
+    onTeamClick: (Team) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val bgColor = when (fieldIndex % 3) {
@@ -295,7 +430,9 @@ fun GameField(
                     Image(
                         painter = painterResource(id = team.imageRes),
                         contentDescription = team.label,
-                        modifier = Modifier.size(20.dp),
+                        modifier = Modifier
+                            .size(20.dp)
+                            .clickable { onTeamClick(team) },
                         contentScale = ContentScale.Fit
                     )
                     Spacer(Modifier.width(2.dp))

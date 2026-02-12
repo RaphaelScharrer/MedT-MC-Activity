@@ -180,7 +180,7 @@ fun GameSummaryScreen(
                                     Spacer(Modifier.width(12.dp))
                                     Column {
                                         Text(
-                                            text = team.label + " jaha",
+                                            text = team.label,
                                             style = MaterialTheme.typography.titleLarge,
                                             fontWeight = FontWeight.Bold
                                         )
