@@ -228,14 +228,14 @@ fun PlayerTeamSetupScreen(
                         Spacer(Modifier.height(8.dp))
                         Card(
                             colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                                containerColor = Color(0xFFD4EDDA)
                             ),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(
                                 state.successMessage ?: "",
                                 modifier = Modifier.padding(12.dp),
-                                color = MaterialTheme.colorScheme.onTertiaryContainer
+                                color = Color(0xFF1B5E20)
                             )
                         }
                     }
