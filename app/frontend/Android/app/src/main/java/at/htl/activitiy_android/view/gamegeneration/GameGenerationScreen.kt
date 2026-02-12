@@ -72,7 +72,7 @@ fun GameGenerationScreen(
                             onValueChange = {
                                 vm.onEvent(GameGenerationEvent.GameNameChanged(it))
                             },
-                            label = { Text("Spielname") },
+                            label = { Text(text = stringResource(R.string.gamegeneration_input_game_name)) },
                             placeholder = { Text(text = stringResource(R.string.gamegeneration_input_game_name)) },
                             singleLine = true,
                             enabled = !state.isLoading,
@@ -100,7 +100,7 @@ fun GameGenerationScreen(
                             enabled = !state.isLoading && state.gameNameInput.isNotBlank(),
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text(text = stringResource(R.string.gamegeneration_button_next),)
+                            Text(text = stringResource(R.string.gamegeneration_button_next))
                         }
                     }
                 }

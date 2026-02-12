@@ -142,7 +142,7 @@ class GamePlayViewModel(
                 currentWord = wordToUse,
                 availableWords = it.availableWords.filter { w -> w.id != wordToUse.id },
                 phase = GamePhase.TIMER_RUNNING,
-                timerSeconds = 10,  // 10 seconds for testing
+                timerSeconds = 60,  // 10 seconds for testing
                 timerRunning = true,
                 timeUp = false
             )

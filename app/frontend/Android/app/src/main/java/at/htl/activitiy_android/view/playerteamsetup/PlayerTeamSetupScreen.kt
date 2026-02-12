@@ -19,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -55,7 +56,7 @@ fun PlayerTeamSetupScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Spieler & Teams") },
+                title = { Text(text = stringResource(R.string.playerteamsetup_player_team)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
@@ -84,10 +85,10 @@ fun PlayerTeamSetupScreen(
                                 strokeWidth = 2.dp
                             )
                             Spacer(Modifier.width(8.dp))
-                            Text("Wird gespeichert...")
+                            Text(text = stringResource(R.string.playerteamsetup_saving))
                         } else {
                             Text(
-                                "Fertig",
+                                text = stringResource(R.string.playerteamsetup_next_page),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
@@ -116,7 +117,7 @@ fun PlayerTeamSetupScreen(
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
-                            "Spieler hinzufügen",
+                            text = stringResource(R.string.playerteamsetup_add_player),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -130,8 +131,8 @@ fun PlayerTeamSetupScreen(
                                 onValueChange = {
                                     vm.onEvent(PlayerTeamSetupEvent.NameChanged(it))
                                 },
-                                label = { Text("Spielername") },
-                                placeholder = { Text("z.B. Max") },
+                                label = { Text(text = stringResource(R.string.playerteamsetup_player_name)) },
+                                placeholder = { Text(text = stringResource(R.string.playerteamsetup_player_name_example)) },
                                 singleLine = true,
                                 modifier = Modifier.weight(1f),
                                 enabled = !state.isPersisting,
@@ -145,7 +146,7 @@ fun PlayerTeamSetupScreen(
                                 onClick = { vm.onEvent(PlayerTeamSetupEvent.AddPlayer) },
                                 enabled = !state.isPersisting && state.nameInput.isNotBlank()
                             ) {
-                                Text("Hinzufügen")
+                                Text(text = stringResource(R.string.playerteamsetup_add_player_button))
                             }
                         }
                     }
@@ -244,7 +245,8 @@ fun PlayerTeamSetupScreen(
 
                 // Spielerliste Header
                 Text(
-                    "Spieler (${state.players.size})",
+                    text = "${stringResource(R.string.playerteamsetup_player_count)} (${state.players.size})",
+                    //"Spieler (${state.players.size})",
                     fontWeight = FontWeight.SemiBold,
                     style = MaterialTheme.typography.titleSmall
                 )
@@ -252,7 +254,7 @@ fun PlayerTeamSetupScreen(
                 Spacer(Modifier.height(4.dp))
 
                 Text(
-                    "Tippe auf einen Spieler, um das Team zu wechseln",
+                    text = stringResource(R.string.playerteamsetup_change_team_explanation),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -262,7 +264,7 @@ fun PlayerTeamSetupScreen(
                 // Spielerliste
                 if (state.players.isEmpty()) {
                     Text(
-                        "Noch keine Spieler hinzugefügt.",
+                        text = stringResource(R.string.playerteamsetup_noplayer_yet),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -301,7 +303,7 @@ fun PlayerTeamSetupScreen(
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         CircularProgressIndicator()
                         Spacer(Modifier.height(8.dp))
-                        Text("Daten werden gespeichert...")
+                        Text(text = stringResource(R.string.playerteamsetup_saving))
                     }
                 }
             }
@@ -312,18 +314,18 @@ fun PlayerTeamSetupScreen(
     if (state.showConfirmDialog) {
         AlertDialog(
             onDismissRequest = { vm.onEvent(PlayerTeamSetupEvent.DismissConfirmDialog) },
-            title = { Text("Teams bestätigen") },
+            title = { Text(text = stringResource(R.string.playerteamsetup_popup_approveteams)) },
             text = {
-                Text("Bist du zufrieden mit den Teams? Im Spiel können sie nicht mehr geändert werden.")
+                Text(text = stringResource(R.string.playerteamsetup_popup_nochanges))
             },
             confirmButton = {
                 Button(onClick = { vm.onEvent(PlayerTeamSetupEvent.ConfirmTeams) }) {
-                    Text("Ja")
+                    Text(text = stringResource(R.string.yes))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { vm.onEvent(PlayerTeamSetupEvent.DismissConfirmDialog) }) {
-                    Text("Nein")
+                    Text(text = stringResource(R.string.no))
                 }
             }
         )
