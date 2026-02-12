@@ -25,6 +25,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.htl.activitiy_android.R
 import at.htl.activitiy_android.domain.model.Team
+import at.htl.activitiy_android.view.endscreen.EndGameActivity
 import at.htl.activitiy_android.view.gameplay.GamePlayActivity
 
 class GameBoardActivity : ComponentActivity() {
@@ -64,6 +65,15 @@ fun GameBoardScreen(
 
     LaunchedEffect(Unit) {
         vm.loadBoardState()
+    }
+
+    // Navigate to EndGameScreen when only 1 team is left
+    LaunchedEffect(state.finishedTeamIds.size) {
+        val activeTeams = state.teams.filter { it.id !in state.finishedTeamIds }
+        if (activeTeams.size <= 1 && state.teams.isNotEmpty()) {
+            val intent = Intent(context, EndGameActivity::class.java)
+            context.startActivity(intent)
+        }
     }
 
     // Team Info Dialog
@@ -171,6 +181,7 @@ fun GameBoardScreen(
                         fontWeight = FontWeight.Bold
                     )
                 }
+
             }
         }
     }

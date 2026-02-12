@@ -34,7 +34,9 @@
         <activity
             android:name=".view.gameplay.GamePlayActivity"
             android:exported="false" />
-
+        <activity
+            android:name=".view.endscreen.EndGameActivity"
+            android:exported="false" />
 
 
     </application>
