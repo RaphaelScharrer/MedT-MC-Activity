@@ -1,13 +1,13 @@
-D:\Schule\5AHITM\1. Semester\MedT-MC\activity\MedT-MC-Activity\app\backend\src\main\java\at\ac\htlleonding\model\Team.java
-D:\Schule\5AHITM\1. Semester\MedT-MC\activity\MedT-MC-Activity\app\backend\src\main\java\at\ac\htlleonding\boundary\WordResource.java
-D:\Schule\5AHITM\1. Semester\MedT-MC\activity\MedT-MC-Activity\app\backend\src\main\java\at\ac\htlleonding\dto\WordDTO.java
-D:\Schule\5AHITM\1. Semester\MedT-MC\activity\MedT-MC-Activity\app\backend\src\main\java\at\ac\htlleonding\model\Game.java
-D:\Schule\5AHITM\1. Semester\MedT-MC\activity\MedT-MC-Activity\app\backend\src\main\java\at\ac\htlleonding\model\Player.java
-D:\Schule\5AHITM\1. Semester\MedT-MC\activity\MedT-MC-Activity\app\backend\src\main\java\at\ac\htlleonding\dto\GameDTO.java
-D:\Schule\5AHITM\1. Semester\MedT-MC\activity\MedT-MC-Activity\app\backend\src\main\java\at\ac\htlleonding\dto\PlayerDTO.java
-D:\Schule\5AHITM\1. Semester\MedT-MC\activity\MedT-MC-Activity\app\backend\src\main\java\at\ac\htlleonding\dto\ErrorResponse.java
-D:\Schule\5AHITM\1. Semester\MedT-MC\activity\MedT-MC-Activity\app\backend\src\main\java\at\ac\htlleonding\boundary\PlayerResource.java
-D:\Schule\5AHITM\1. Semester\MedT-MC\activity\MedT-MC-Activity\app\backend\src\main\java\at\ac\htlleonding\model\Word.java
-D:\Schule\5AHITM\1. Semester\MedT-MC\activity\MedT-MC-Activity\app\backend\src\main\java\at\ac\htlleonding\boundary\GameResource.java
-D:\Schule\5AHITM\1. Semester\MedT-MC\activity\MedT-MC-Activity\app\backend\src\main\java\at\ac\htlleonding\boundary\TeamResource.java
-D:\Schule\5AHITM\1. Semester\MedT-MC\activity\MedT-MC-Activity\app\backend\src\main\java\at\ac\htlleonding\dto\TeamDTO.java
+/home/alina/School/vertiefung/git/03/MedT-MC-Activity2/app/backend/src/main/java/at/ac/htlleonding/model/Player.java
+/home/alina/School/vertiefung/git/03/MedT-MC-Activity2/app/backend/src/main/java/at/ac/htlleonding/model/Game.java
+/home/alina/School/vertiefung/git/03/MedT-MC-Activity2/app/backend/src/main/java/at/ac/htlleonding/model/Team.java
+/home/alina/School/vertiefung/git/03/MedT-MC-Activity2/app/backend/src/main/java/at/ac/htlleonding/dto/PlayerDTO.java
+/home/alina/School/vertiefung/git/03/MedT-MC-Activity2/app/backend/src/main/java/at/ac/htlleonding/dto/GameDTO.java
+/home/alina/School/vertiefung/git/03/MedT-MC-Activity2/app/backend/src/main/java/at/ac/htlleonding/model/Word.java
+/home/alina/School/vertiefung/git/03/MedT-MC-Activity2/app/backend/src/main/java/at/ac/htlleonding/boundary/GameResource.java
+/home/alina/School/vertiefung/git/03/MedT-MC-Activity2/app/backend/src/main/java/at/ac/htlleonding/dto/ErrorResponse.java
+/home/alina/School/vertiefung/git/03/MedT-MC-Activity2/app/backend/src/main/java/at/ac/htlleonding/boundary/TeamResource.java
+/home/alina/School/vertiefung/git/03/MedT-MC-Activity2/app/backend/src/main/java/at/ac/htlleonding/dto/WordDTO.java
+/home/alina/School/vertiefung/git/03/MedT-MC-Activity2/app/backend/src/main/java/at/ac/htlleonding/boundary/PlayerResource.java
+/home/alina/School/vertiefung/git/03/MedT-MC-Activity2/app/backend/src/main/java/at/ac/htlleonding/dto/TeamDTO.java
+/home/alina/School/vertiefung/git/03/MedT-MC-Activity2/app/backend/src/main/java/at/ac/htlleonding/boundary/WordResource.java

@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Activitiy-Android</string>
+    <string name="gamemode_choose_modus">Spielmodus wählen</string>
+    <string name="gamemode_local">Lokal</string>
+    <string name="gamegeneration_new_game">Neues Spiel erstellen</string>
+    <string name="gamegeneration_name_game">Gib deinem Spiel einen Namen</string>
+    <string name="gamegeneration_input_game_name">Spielname</string>
+    <string name="gamegeneration_button_next">Weiter</string>
     <string name="To_Gameplay">Zum Spiel</string>
 </resources>

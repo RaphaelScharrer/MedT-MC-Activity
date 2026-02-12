@@ -7,8 +7,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import at.htl.activitiy_android.R
 
 @Composable
 fun GameModeScreen(
@@ -23,6 +25,7 @@ fun GameModeScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        //Text(text = stringResource(R.string.welcome_text))
         Text(
             "Activity",
             style = MaterialTheme.typography.displayMedium,
@@ -33,7 +36,7 @@ fun GameModeScreen(
         Spacer(Modifier.height(12.dp))
 
         Text(
-            "Spielmodus wählen",
+            text = stringResource(R.string.gamemode_choose_modus),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -53,7 +56,7 @@ fun GameModeScreen(
             Icon(Icons.Filled.Person, contentDescription = null)
             Spacer(Modifier.width(8.dp))
             Text(
-                "Lokal",
+                text = stringResource(R.string.gamemode_local),
                 style = MaterialTheme.typography.titleMedium
             )
         }

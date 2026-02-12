@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">Activitiy-Android</string>
     <string name="To_Gameplay">To Gameplay</string>
+    <string name="gamemode_choose_modus">choose gamemode</string>
+    <string name="gamemode_local">Local</string>
+    <string name="gamegeneration_new_game">Create new Game</string>
+    <string name="gamegeneration_name_game">Give the game a name</string>
+    <string name="gamegeneration_input_game_name">Game name</string>
+    <string name="gamegeneration_button_next">Next</string>
 </resources>

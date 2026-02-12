@@ -6,9 +6,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import at.htl.activitiy_android.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,7 +51,7 @@ fun GameGenerationScreen(
                         Spacer(Modifier.height(16.dp))
 
                         Text(
-                            "Neues Spiel erstellen",
+                            text = stringResource(R.string.gamegeneration_new_game),
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -58,7 +60,7 @@ fun GameGenerationScreen(
                         Spacer(Modifier.height(8.dp))
 
                         Text(
-                            "Gib deinem Spiel einen Namen",
+                            text = stringResource(R.string.gamegeneration_name_game),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
                         )
@@ -71,7 +73,7 @@ fun GameGenerationScreen(
                                 vm.onEvent(GameGenerationEvent.GameNameChanged(it))
                             },
                             label = { Text("Spielname") },
-                            placeholder = { Text("z.B. Activity Abend 2026") },
+                            placeholder = { Text(text = stringResource(R.string.gamegeneration_input_game_name)) },
                             singleLine = true,
                             enabled = !state.isLoading,
                             modifier = Modifier.fillMaxWidth(),
@@ -98,7 +100,7 @@ fun GameGenerationScreen(
                             enabled = !state.isLoading && state.gameNameInput.isNotBlank(),
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text("Weiter")
+                            Text(text = stringResource(R.string.gamegeneration_button_next),)
                         }
                     }
                 }
