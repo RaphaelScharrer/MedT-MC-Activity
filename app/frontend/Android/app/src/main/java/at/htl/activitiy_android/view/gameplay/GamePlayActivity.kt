@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import at.htl.activitiy_android.ui.theme.ActivitiyAndroidTheme
 
 class GamePlayActivity : ComponentActivity() {
 
@@ -17,7 +18,7 @@ class GamePlayActivity : ComponentActivity() {
         val gameId = intent.getLongExtra(EXTRA_GAME_ID, -1L)
 
         setContent {
-            MaterialTheme {
+            ActivitiyAndroidTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background

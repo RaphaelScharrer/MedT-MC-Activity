@@ -137,8 +137,15 @@ fun PlayerTeamSetupScreen(
                                 modifier = Modifier.weight(1f),
                                 enabled = !state.isPersisting,
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    focusedContainerColor = MaterialTheme.colorScheme.surface,
-                                    unfocusedContainerColor = MaterialTheme.colorScheme.surface
+                                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                    focusedTextColor = Color.White,
+                                    unfocusedTextColor = Color.White,
+                                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                                    unfocusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    cursorColor = MaterialTheme.colorScheme.primary
                                 )
                             )
                             Spacer(Modifier.width(8.dp))
@@ -228,14 +235,14 @@ fun PlayerTeamSetupScreen(
                         Spacer(Modifier.height(8.dp))
                         Card(
                             colors = CardDefaults.cardColors(
-                                containerColor = Color(0xFFD4EDDA)
+                                containerColor = Color(0xFF1B5E20).copy(alpha = 0.8f)
                             ),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(
                                 state.successMessage ?: "",
                                 modifier = Modifier.padding(12.dp),
-                                color = Color(0xFF1B5E20)
+                                color = Color.White
                             )
                         }
                     }

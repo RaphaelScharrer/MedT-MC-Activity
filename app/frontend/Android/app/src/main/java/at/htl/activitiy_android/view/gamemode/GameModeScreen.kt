@@ -1,15 +1,17 @@
 package at.htl.activitiy_android.view.gamemode
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import at.htl.activitiy_android.R
 
 @Composable
@@ -18,67 +20,69 @@ fun GameModeScreen(
 ) {
     var showOnlineDialog by remember { mutableStateOf(false) }
 
+    val buttonOrange = Color(0xFFE8A020)
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .padding(horizontal = 48.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        //Text(text = stringResource(R.string.welcome_text))
+        Spacer(Modifier.weight(1f))
+
+        // "Activity" Titel — oben im oberen Drittel
         Text(
             "Activity",
-            style = MaterialTheme.typography.displayMedium,
+            fontSize = 48.sp,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
+            color = Color.White
         )
 
-        Spacer(Modifier.height(12.dp))
-
-        Text(
-            text = stringResource(R.string.gamemode_choose_modus),
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Spacer(Modifier.height(48.dp))
+        Spacer(Modifier.weight(1f))
 
         // Lokal Button
-        Button(
+        OutlinedButton(
             onClick = onLocalSelected,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(56.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary
+                .height(52.dp),
+            shape = RoundedCornerShape(8.dp),
+            border = BorderStroke(2.dp, buttonOrange),
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = Color.White,
+                contentColor = Color.Black
             )
         ) {
-            Icon(Icons.Filled.Person, contentDescription = null)
-            Spacer(Modifier.width(8.dp))
             Text(
                 text = stringResource(R.string.gamemode_local),
-                style = MaterialTheme.typography.titleMedium
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium
             )
         }
 
         Spacer(Modifier.height(16.dp))
 
         // Online Button
-        Button(
+        OutlinedButton(
             onClick = { showOnlineDialog = true },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(56.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondary
+                .height(52.dp),
+            shape = RoundedCornerShape(8.dp),
+            border = BorderStroke(2.dp, buttonOrange),
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = Color.White,
+                contentColor = Color.Black
             )
         ) {
-            Spacer(Modifier.width(8.dp))
             Text(
                 "Online",
-                style = MaterialTheme.typography.titleMedium
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium
             )
         }
+
+        Spacer(Modifier.weight(1.5f))
     }
 
     if (showOnlineDialog) {

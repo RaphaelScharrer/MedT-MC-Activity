@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.htl.activitiy_android.R
+import at.htl.activitiy_android.ui.theme.ActivitiyAndroidTheme
 import at.htl.activitiy_android.domain.model.Team
 import at.htl.activitiy_android.view.endscreen.EndGameActivity
 import at.htl.activitiy_android.view.gameplay.GamePlayActivity
@@ -36,7 +37,7 @@ class GameBoardActivity : ComponentActivity() {
         val gameId = intent.getLongExtra(EXTRA_GAME_ID, -1L)
 
         setContent {
-            MaterialTheme {
+            ActivitiyAndroidTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background

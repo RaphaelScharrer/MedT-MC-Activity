@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.htl.activitiy_android.MainActivity
+import at.htl.activitiy_android.ui.theme.ActivitiyAndroidTheme
 import at.htl.activitiy_android.data.repository.GameRepository
 import at.htl.activitiy_android.domain.model.Player
 import at.htl.activitiy_android.domain.model.Team
@@ -73,7 +74,7 @@ class EndGameActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MaterialTheme {
+            ActivitiyAndroidTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background

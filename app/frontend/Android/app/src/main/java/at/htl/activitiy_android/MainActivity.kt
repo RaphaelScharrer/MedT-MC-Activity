@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.htl.activitiy_android.data.repository.GameRepository
+import at.htl.activitiy_android.ui.theme.ActivitiyAndroidTheme
 import at.htl.activitiy_android.view.gamegeneration.GameGenerationScreen
 import at.htl.activitiy_android.view.gamegeneration.GameGenerationViewModel
 import at.htl.activitiy_android.view.gamemode.GameModeScreen
@@ -25,7 +26,7 @@ class MainActivity : ComponentActivity() {
         val resetToGameMode = intent.getBooleanExtra("RESET_TO_GAME_MODE", false)
 
         setContent {
-            MaterialTheme {
+            ActivitiyAndroidTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     AppNavigation(resetToGameMode = resetToGameMode)
                 }
