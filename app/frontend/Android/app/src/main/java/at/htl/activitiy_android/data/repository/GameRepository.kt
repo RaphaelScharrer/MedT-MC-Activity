@@ -270,6 +270,17 @@ object GameRepository {
         _currentSession.update { it.copy(usedWordIds = emptySet()) }
     }
 
+    // ========== SAVE GAME STATE ==========
+
+    suspend fun saveGameState(): Result<Unit> = runCatching {
+        val session = _currentSession.value
+        session.teams.forEach { team ->
+            val teamId = team.id ?: return@forEach
+            val boardPosition = session.teamBoardPositions[teamId] ?: team.position
+            api.updateTeam(teamId, team.copy(position = boardPosition))
+        }
+    }
+
     // ========== REFRESH ==========
 
     suspend fun refreshCurrentGame(): Result<Unit> = runCatching {

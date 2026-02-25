@@ -1,13 +1,13 @@
-D:\Schule\5AHITM\2. Semester\MedT-MC\MedT-MC-Activity\app\backend\src\main\java\at\ac\htlleonding\dto\ErrorResponse.java
-D:\Schule\5AHITM\2. Semester\MedT-MC\MedT-MC-Activity\app\backend\src\main\java\at\ac\htlleonding\model\Player.java
-D:\Schule\5AHITM\2. Semester\MedT-MC\MedT-MC-Activity\app\backend\src\main\java\at\ac\htlleonding\dto\GameDTO.java
-D:\Schule\5AHITM\2. Semester\MedT-MC\MedT-MC-Activity\app\backend\src\main\java\at\ac\htlleonding\boundary\GameResource.java
-D:\Schule\5AHITM\2. Semester\MedT-MC\MedT-MC-Activity\app\backend\src\main\java\at\ac\htlleonding\dto\TeamDTO.java
-D:\Schule\5AHITM\2. Semester\MedT-MC\MedT-MC-Activity\app\backend\src\main\java\at\ac\htlleonding\dto\PlayerDTO.java
-D:\Schule\5AHITM\2. Semester\MedT-MC\MedT-MC-Activity\app\backend\src\main\java\at\ac\htlleonding\model\Game.java
-D:\Schule\5AHITM\2. Semester\MedT-MC\MedT-MC-Activity\app\backend\src\main\java\at\ac\htlleonding\boundary\TeamResource.java
-D:\Schule\5AHITM\2. Semester\MedT-MC\MedT-MC-Activity\app\backend\src\main\java\at\ac\htlleonding\boundary\PlayerResource.java
-D:\Schule\5AHITM\2. Semester\MedT-MC\MedT-MC-Activity\app\backend\src\main\java\at\ac\htlleonding\boundary\WordResource.java
-D:\Schule\5AHITM\2. Semester\MedT-MC\MedT-MC-Activity\app\backend\src\main\java\at\ac\htlleonding\model\Word.java
-D:\Schule\5AHITM\2. Semester\MedT-MC\MedT-MC-Activity\app\backend\src\main\java\at\ac\htlleonding\dto\WordDTO.java
-D:\Schule\5AHITM\2. Semester\MedT-MC\MedT-MC-Activity\app\backend\src\main\java\at\ac\htlleonding\model\Team.java
+/Users/macbook/Documents/5AHITM/MC2/MedT-MC-Activity/app/backend/src/main/java/at/ac/htlleonding/dto/WordDTO.java
+/Users/macbook/Documents/5AHITM/MC2/MedT-MC-Activity/app/backend/src/main/java/at/ac/htlleonding/dto/PlayerDTO.java
+/Users/macbook/Documents/5AHITM/MC2/MedT-MC-Activity/app/backend/src/main/java/at/ac/htlleonding/model/Word.java
+/Users/macbook/Documents/5AHITM/MC2/MedT-MC-Activity/app/backend/src/main/java/at/ac/htlleonding/dto/TeamDTO.java
+/Users/macbook/Documents/5AHITM/MC2/MedT-MC-Activity/app/backend/src/main/java/at/ac/htlleonding/boundary/GameResource.java
+/Users/macbook/Documents/5AHITM/MC2/MedT-MC-Activity/app/backend/src/main/java/at/ac/htlleonding/dto/ErrorResponse.java
+/Users/macbook/Documents/5AHITM/MC2/MedT-MC-Activity/app/backend/src/main/java/at/ac/htlleonding/dto/GameDTO.java
+/Users/macbook/Documents/5AHITM/MC2/MedT-MC-Activity/app/backend/src/main/java/at/ac/htlleonding/model/Team.java
+/Users/macbook/Documents/5AHITM/MC2/MedT-MC-Activity/app/backend/src/main/java/at/ac/htlleonding/boundary/WordResource.java
+/Users/macbook/Documents/5AHITM/MC2/MedT-MC-Activity/app/backend/src/main/java/at/ac/htlleonding/boundary/PlayerResource.java
+/Users/macbook/Documents/5AHITM/MC2/MedT-MC-Activity/app/backend/src/main/java/at/ac/htlleonding/model/Player.java
+/Users/macbook/Documents/5AHITM/MC2/MedT-MC-Activity/app/backend/src/main/java/at/ac/htlleonding/model/Game.java
+/Users/macbook/Documents/5AHITM/MC2/MedT-MC-Activity/app/backend/src/main/java/at/ac/htlleonding/boundary/TeamResource.java

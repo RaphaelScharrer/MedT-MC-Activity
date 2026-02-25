@@ -2,18 +2,22 @@ package at.htl.activitiy_android.view.playfield
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import at.htl.activitiy_android.data.repository.GameRepository
 import at.htl.activitiy_android.domain.model.Team
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 data class GameBoardState(
     val teams: List<Team> = emptyList(),
     val teamBoardPositions: Map<Long, Int> = emptyMap(),
     val finishedTeamIds: Set<Long> = emptySet(),
     val currentTeamIndex: Int = 0,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val isSaving: Boolean = false,
+    val saveCompleted: Boolean = false
 )
 
 class GameBoardViewModel(
@@ -24,6 +28,15 @@ class GameBoardViewModel(
 
     private val _state = MutableStateFlow(GameBoardState())
     val state: StateFlow<GameBoardState> = _state
+
+    fun saveAndExit() {
+        viewModelScope.launch {
+            _state.update { it.copy(isSaving = true) }
+            repository.saveGameState()
+            repository.clearSession()
+            _state.update { it.copy(isSaving = false, saveCompleted = true) }
+        }
+    }
 
     fun loadBoardState() {
         val session = repository.currentSession.value

@@ -18,11 +18,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
+import at.htl.activitiy_android.MainActivity
 import at.htl.activitiy_android.R
 import at.htl.activitiy_android.ui.theme.ActivitiyAndroidTheme
 import at.htl.activitiy_android.domain.model.Team
@@ -63,6 +63,7 @@ fun GameBoardScreen(
     val state by vm.state.collectAsState()
     val context = LocalContext.current
     var selectedTeam by remember { mutableStateOf<Team?>(null) }
+    var showSaveConfirmDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         vm.loadBoardState()
@@ -75,6 +76,55 @@ fun GameBoardScreen(
             val intent = Intent(context, EndGameActivity::class.java)
             context.startActivity(intent)
         }
+    }
+
+    // Navigate to start screen after save completed
+    LaunchedEffect(state.saveCompleted) {
+        if (state.saveCompleted) {
+            val intent = Intent(context, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                putExtra("RESET_TO_GAME_MODE", true)
+            }
+            context.startActivity(intent)
+        }
+    }
+
+    // Bestätigungs-Dialog für Beenden & Speichern
+    if (showSaveConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = { showSaveConfirmDialog = false },
+            title = {
+                Text(
+                    text = "Spiel beenden?",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Text(
+                    text = "Der aktuelle Spielstand wird gespeichert und du kehrst zum Startbildschirm zurück.",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showSaveConfirmDialog = false
+                        vm.saveAndExit()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Text("Beenden & Speichern")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showSaveConfirmDialog = false }) {
+                    Text("Abbrechen")
+                }
+            }
+        )
     }
 
     // Team Info Dialog
@@ -170,7 +220,7 @@ fun GameBoardScreen(
                         intent.putExtra(GamePlayActivity.EXTRA_GAME_ID, gameId)
                         context.startActivity(intent)
                     },
-                    enabled = activeTeams.isNotEmpty(),
+                    enabled = activeTeams.isNotEmpty() && !state.isSaving,
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary
@@ -183,6 +233,34 @@ fun GameBoardScreen(
                     )
                 }
 
+                OutlinedButton(
+                    onClick = { showSaveConfirmDialog = true },
+                    enabled = !state.isSaving,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    if (state.isSaving) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(18.dp),
+                            strokeWidth = 2.dp,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Speichern...",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                    } else {
+                        Text(
+                            text = "Beenden & Speichern",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
             }
         }
     }
