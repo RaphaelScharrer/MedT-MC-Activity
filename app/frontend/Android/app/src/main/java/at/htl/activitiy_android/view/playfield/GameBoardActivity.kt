@@ -25,6 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import at.htl.activitiy_android.MainActivity
 import at.htl.activitiy_android.R
 import at.htl.activitiy_android.ui.theme.ActivitiyAndroidTheme
+import at.htl.activitiy_android.domain.model.Player
 import at.htl.activitiy_android.domain.model.Team
 import at.htl.activitiy_android.view.endscreen.EndGameActivity
 import at.htl.activitiy_android.view.gameplay.GamePlayActivity
@@ -64,6 +65,12 @@ fun GameBoardScreen(
     val context = LocalContext.current
     var selectedTeam by remember { mutableStateOf<Team?>(null) }
     var showSaveConfirmDialog by remember { mutableStateOf(false) }
+
+    // Spieler des angeklickten Teams
+    val selectedTeamPlayers = remember(selectedTeam, state.players) {
+        val teamId = selectedTeam?.id ?: return@remember emptyList()
+        state.players.filter { it.team == teamId }
+    }
 
     LaunchedEffect(Unit) {
         vm.loadBoardState()
@@ -131,6 +138,7 @@ fun GameBoardScreen(
     selectedTeam?.let { team ->
         TeamInfoDialog(
             team = team,
+            players = selectedTeamPlayers,
             onDismiss = { selectedTeam = null }
         )
     }
@@ -269,18 +277,9 @@ fun GameBoardScreen(
 @Composable
 fun TeamInfoDialog(
     team: Team,
+    players: List<Player>,
     onDismiss: () -> Unit
 ) {
-    val repository = at.htl.activitiy_android.data.repository.GameRepository
-
-    // Load players based on playerIds from team
-    val players = remember(team.id) {
-        val playerIds = team.playerIds ?: emptyList()
-        playerIds.mapNotNull { playerId ->
-            repository.currentSession.value.players.find { it.id == playerId }
-        }
-    }
-
     Dialog(onDismissRequest = onDismiss) {
         Card(
             modifier = Modifier
