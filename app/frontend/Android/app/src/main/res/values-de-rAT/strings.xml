@@ -2,24 +2,30 @@
 <resources>
     <string name="app_name">Activitiy-Android</string>
     <string name="To_Gameplay">Zum Spiel</string>
-    // allgemeine sachen
+    <!-- allgemeine sachen -->
     <string name="yes">Ja</string>
     <string name="no">Nein</string>
     <string name="red">Rot</string>
     <string name="blue">Blau</string>
     <string name="yellow">Gelb</string>
     <string name="green">Grün</string>
-    // gamemode
+    <!-- gamemode -->
     <string name="gamemode_choose_modus">Spielmodus wählen</string>
     <string name="gamemode_local">Lokal</string>
-    //game generation
+    <!-- game generation -->
     <string name="gamegeneration_new_game">Neues Spiel erstellen</string>
     <string name="gamegeneration_name_game">Gib deinem Spiel einen Namen</string>
     <string name="input_game_name">Spielname</string>
     <string name="gamegeneration_button_next">Weiter</string>
-    //player team setup
+    <string name="gamegeneration_saved_games">Gespeicherte Spiele</string>
+    <string name="gamegeneration_resume_button">Fortsetzen</string>
+    <string name="gamegeneration_delete_title">Spielstand löschen?</string>
+    <string name="gamegeneration_delete_message">Möchtest du diesen Spielstand wirklich löschen?</string>
+    <string name="gamegeneration_delete_confirm">Löschen</string>
+    <string name="gamegeneration_delete_cancel">Abbrechen</string>
+    <!-- player team setup -->
     <string name="playerteamsetup_player_team">Spieler und Teams</string>
-    <string name="playerteamsetup_saving">Wird gespeichert...</string>
+    <string name="playerteamsetup_saving">Wird gespeichert&#8230;</string>
     <string name="playerteamsetup_add_player">Spieler hinzufügen</string>
     <string name="playerteamsetup_player_name">Spielername</string>
     <string name="playerteamsetup_player_name_example">z.B. Max</string>
@@ -28,17 +34,16 @@
     <string name="playerteamsetup_change_team_explanation">Tippe auf einen Spieler, um das Team zu wechseln.</string>
     <string name="playerteamsetup_noplayer_yet">Noch keine Spieler hinzugefügt.</string>
     <string name="playerteamsetup_next_page">Weiter</string>
-    //player team setup popup
+    <!-- player team setup popup -->
     <string name="playerteamsetup_popup_approveteams">Teams bestätigen</string>
-    <string name="playerteamsetup_popup_nochanges">Bist du zufrieden mit den Teams? Im Spiel können Sie nicht mehr geändert werden.</string>
-    //game summary screen
+    <string name="playerteamsetup_popup_nochanges">Bist du zufrieden mit den Teams? Im Spiel können sie nicht mehr geändert werden.</string>
+    <!-- game summary screen -->
     <string name="gamesummary_overview">Spiel-Übersicht</string>
     <string name="gamesummary_teamsandplayers">Teams und Spieler</string>
     <string name="gamesummary_teamsummarycolor">Team</string>
     <string name="gamesummary_playerperteam">Spieler</string>
     <string name="gamesummary_points">Pkt.</string>
     <string name="gamesummary_startgame">Spiel starten</string>
-    <string name="gamesummary_noplayersinteam">Keine Spieler in diesem Team</string>
-
+    <string name="gamesummary_noplayersinteam">Keine Spieler in diesem Team.</string>
 
 </resources>

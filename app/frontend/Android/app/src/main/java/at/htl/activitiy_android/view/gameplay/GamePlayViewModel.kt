@@ -181,8 +181,15 @@ class GamePlayViewModel(
         val points = s.selectedDifficulty ?: return
         val teamId = s.currentTeam?.id ?: return
 
-        // Award points: advance team on board
+        // Award points: advance team on board (local)
         repository.advanceTeam(teamId, points)
+
+        // Update team position in backend
+        viewModelScope.launch {
+            repository.updateTeamPositionInBackend(teamId).onFailure { e ->
+                _state.update { it.copy(error = "Position konnte nicht gespeichert werden: ${e.message}") }
+            }
+        }
 
         // Advance to next active team for the next round
         repository.advanceToNextTeam()

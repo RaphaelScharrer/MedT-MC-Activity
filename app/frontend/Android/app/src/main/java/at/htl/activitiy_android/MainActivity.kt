@@ -74,6 +74,10 @@ fun AppNavigation(resetToGameMode: Boolean = false) {
                     currentGameName = name
                     currentScreen = Screen.PlayerTeamSetup
                 },
+                onGameResumed = { gameId ->
+                    currentGameId = gameId
+                    currentScreen = Screen.GameSummary
+                },
                 vm = gameVm
             )
         }

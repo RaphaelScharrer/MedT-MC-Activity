@@ -77,11 +77,40 @@ object GameRepository {
         api.getAllGames()
     }
 
+    suspend fun deleteGameWithAll(gameId: Long): Result<Unit> = runCatching {
+        mutex.withLock {
+            // Alle Teams des Spiels laden
+            val teams = api.getAllTeams().filter { it.gameId == gameId }
+
+            // Alle Spieler jedes Teams löschen
+            teams.forEach { team ->
+                team.id?.let { teamId ->
+                    api.getPlayersByTeam(teamId).forEach { player ->
+                        player.id?.let { api.deletePlayer(it) }
+                    }
+                }
+            }
+
+            // Alle Teams löschen
+            teams.forEach { team ->
+                team.id?.let { api.deleteTeam(it) }
+            }
+
+            // Spiel löschen
+            api.deleteGame(gameId)
+        }
+    }
+
     // ========== TEAM OPERATIONS ==========
 
     suspend fun loadTeamsForGame(gameId: Long): Result<List<Team>> = runCatching {
         val allTeams = api.getAllTeams()
-        val teams = allTeams.filter { it.gameId == gameId }.sortedBy { it.position }
+        // Sortierung nach ID sichert die ursprüngliche Erstellungsreihenfolge
+        // und damit eine stabile Farb-Zuweisung (unabhängig von board position)
+        val teams = allTeams
+            .filter { it.gameId == gameId }
+            .sortedBy { it.id ?: 0L }
+            .mapIndexed { index, team -> team.copy(colorIndex = index % 4) }
         _currentSession.update { it.copy(teams = teams) }
         teams
     }
@@ -216,6 +245,14 @@ object GameRepository {
         }
     }
 
+    fun restoreBoardPositionsFromBackend(teams: List<Team>) {
+        _currentSession.update { session ->
+            val positions = teams.associate { (it.id ?: 0L) to it.position }
+            val finished = teams.filter { it.position >= 16 }.mapNotNull { it.id }.toSet()
+            session.copy(teamBoardPositions = positions, finishedTeamIds = finished)
+        }
+    }
+
     fun getTeamBoardPosition(teamId: Long): Int {
         return _currentSession.value.teamBoardPositions[teamId] ?: 0
     }
@@ -268,6 +305,17 @@ object GameRepository {
 
     fun resetWordTracking() {
         _currentSession.update { it.copy(usedWordIds = emptySet()) }
+    }
+
+    // ========== UPDATE TEAM POSITION IN BACKEND ==========
+
+    suspend fun updateTeamPositionInBackend(teamId: Long): Result<Unit> = runCatching {
+        val session = _currentSession.value
+        val team = session.teams.find { it.id == teamId }
+            ?: throw IllegalArgumentException("Team $teamId not found")
+        val boardPosition = session.teamBoardPositions[teamId]
+            ?: throw IllegalArgumentException("Board position for team $teamId not found")
+        api.updateTeam(teamId, team.copy(position = boardPosition))
     }
 
     // ========== SAVE GAME STATE ==========

@@ -32,6 +32,10 @@ class GameGenerationViewModel : ViewModel() {
             is GameGenerationEvent.LoadGame -> loadGame(event.gameId)
 
             is GameGenerationEvent.UpdateGame -> updateGame(event.gameId, event.onSuccess)
+
+            is GameGenerationEvent.ResumeGame -> resumeGame(event.gameId, event.onSuccess)
+
+            is GameGenerationEvent.DeleteGame -> deleteGame(event.gameId)
         }
     }
 
@@ -42,7 +46,7 @@ class GameGenerationViewModel : ViewModel() {
                 .onSuccess { games ->
                     _state.update {
                         it.copy(
-                            recentGames = games.take(5),
+                            recentGames = games,
                             isLoading = false
                         )
                     }
@@ -55,6 +59,27 @@ class GameGenerationViewModel : ViewModel() {
                         )
                     }
                 }
+        }
+    }
+
+    private fun resumeGame(gameId: Long, onSuccess: (Long) -> Unit) {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, error = null) }
+            try {
+                repository.startNewSession(gameId)
+                repository.loadGame(gameId).onFailure { throw it }
+                val teams = repository.loadTeamsForGame(gameId).getOrThrow()
+                repository.restoreBoardPositionsFromBackend(teams)
+                _state.update { it.copy(isLoading = false) }
+                onSuccess(gameId)
+            } catch (e: Exception) {
+                _state.update {
+                    it.copy(
+                        error = "Fehler beim Laden: ${e.message}",
+                        isLoading = false
+                    )
+                }
+            }
         }
     }
 
@@ -155,6 +180,25 @@ class GameGenerationViewModel : ViewModel() {
                     _state.update {
                         it.copy(
                             error = "Fehler beim Erstellen: ${e.message}",
+                            isLoading = false
+                        )
+                    }
+                }
+        }
+    }
+
+    private fun deleteGame(gameId: Long) {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, error = null) }
+            repository.deleteGameWithAll(gameId)
+                .onSuccess {
+                    val games = repository.getAllGames().getOrElse { emptyList() }
+                    _state.update { it.copy(recentGames = games, isLoading = false) }
+                }
+                .onFailure { e ->
+                    _state.update {
+                        it.copy(
+                            error = "Fehler beim Löschen: ${e.message}",
                             isLoading = false
                         )
                     }

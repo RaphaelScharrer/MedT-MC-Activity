@@ -123,7 +123,7 @@ fun GameBoardScreen(
                         containerColor = MaterialTheme.colorScheme.error
                     )
                 ) {
-                    Text("Beenden & Speichern")
+                    Text("Beenden")
                 }
             },
             dismissButton = {
