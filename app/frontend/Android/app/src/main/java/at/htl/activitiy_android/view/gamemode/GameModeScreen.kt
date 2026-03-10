@@ -1,15 +1,14 @@
 package at.htl.activitiy_android.view.gamemode
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import at.htl.activitiy_android.R
@@ -20,64 +19,78 @@ fun GameModeScreen(
 ) {
     var showOnlineDialog by remember { mutableStateOf(false) }
 
-    val buttonOrange = Color(0xFFE8A020)
-
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 48.dp),
+            .padding(horizontal = 40.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(Modifier.weight(1f))
 
-        // "Activity" Titel — oben im oberen Drittel
+        // App Icon / Emoji
         Text(
-            "Activity",
-            fontSize = 48.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White
+            text = "🎉",
+            fontSize = 72.sp,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(Modifier.height(16.dp))
+
+        // "Activity" Titel
+        Text(
+            text = "Activity",
+            fontSize = 56.sp,
+            fontWeight = FontWeight.ExtraBold,
+            color = MaterialTheme.colorScheme.onBackground,
+            letterSpacing = 2.sp,
+            textAlign = TextAlign.Center
+        )
+
+        Text(
+            text = "Das Partyspiel",
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center
         )
 
         Spacer(Modifier.weight(1f))
 
-        // Lokal Button
-        OutlinedButton(
+        // Lokal Button – primäre Aktion → orange (secondary)
+        Button(
             onClick = onLocalSelected,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(52.dp),
-            shape = RoundedCornerShape(8.dp),
-            border = BorderStroke(2.dp, buttonOrange),
-            colors = ButtonDefaults.outlinedButtonColors(
-                containerColor = Color.White,
-                contentColor = Color.Black
+                .height(56.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = MaterialTheme.colorScheme.onSecondary
             )
         ) {
             Text(
                 text = stringResource(R.string.gamemode_local),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
             )
         }
 
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(12.dp))
 
-        // Online Button
+        // Online Button – sekundäre Aktion → outlined
         OutlinedButton(
             onClick = { showOnlineDialog = true },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(52.dp),
-            shape = RoundedCornerShape(8.dp),
-            border = BorderStroke(2.dp, buttonOrange),
+                .height(56.dp),
+            shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.outlinedButtonColors(
-                containerColor = Color.White,
-                contentColor = Color.Black
+                contentColor = MaterialTheme.colorScheme.onSurfaceVariant
             )
         ) {
             Text(
-                "Online",
-                fontSize = 16.sp,
+                text = "Online",
+                fontSize = 18.sp,
                 fontWeight = FontWeight.Medium
             )
         }

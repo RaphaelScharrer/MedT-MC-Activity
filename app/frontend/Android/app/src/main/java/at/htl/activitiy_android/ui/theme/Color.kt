@@ -10,37 +10,42 @@ val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
-// App-spezifische Farben
-val AppBackground = Color(0xFF1F30A1)
-val AppBackgroundLight = Color(0xFF2A3DB3)  // etwas heller für Cards/Surfaces
-val AppBackgroundDark = Color(0xFF182588)   // etwas dunkler für Kontrast
+// App-spezifische Farben – tiefes Navy als Basis
+val AppBackground = Color(0xFF0D1442)         // tiefes Mitternachts-Blau
+val AppBackgroundLight = Color(0xFF172068)    // etwas heller für Cards/Surfaces
+val AppBackgroundDark = Color(0xFF08102E)     // noch dunkler für Kontrast
 
 val AppOnBackground = Color.White
-val AppOnBackgroundVariant = Color(0xFFB8C0E8) // gedämpftes Weiß für sekundäre Texte
+val AppOnBackgroundVariant = Color(0xFFB8C2EE)  // gedämpftes Weiß für sekundäre Texte
 
-val AppPrimary = Color(0xFF7B8CFF)         // helles Blau-Lila für Buttons
-val AppOnPrimary = Color(0xFF001452)       // dunkelblau Text auf Primary
-val AppPrimaryContainer = Color(0xFF2A3DB3) // Card-Hintergrund
+// Primary: klares Blau-Violett
+val AppPrimary = Color(0xFF6875FF)
+val AppOnPrimary = Color.White
+val AppPrimaryContainer = Color(0xFF1E2FA8)
 val AppOnPrimaryContainer = Color.White
 
-val AppSecondary = Color(0xFF9BA5D1)       // sekundäre Buttons
-val AppOnSecondary = Color(0xFF0F1A3A)
-val AppSecondaryContainer = Color(0xFF344180)
-val AppOnSecondaryContainer = Color(0xFFDDE1FF)
+// Secondary: Orange – Hauptakzent für wichtige Aktions-Buttons
+val AppSecondary = Color(0xFFFF8C38)
+val AppOnSecondary = Color.White
+val AppSecondaryContainer = Color(0xFF7A3E10)
+val AppOnSecondaryContainer = Color(0xFFFFDBC6)
 
-val AppTertiary = Color(0xFFE0B8FF)
-val AppOnTertiary = Color(0xFF2D004F)
-val AppTertiaryContainer = Color(0xFF4A2D6B)
-val AppOnTertiaryContainer = Color(0xFFF3DAFF)
+// Tertiary: Grün – für Erfolg/Bestätigung (z. B. "Erraten"-Button)
+val AppTertiary = Color(0xFF3DB87A)
+val AppOnTertiary = Color.White
+val AppTertiaryContainer = Color(0xFF1A5E38)
+val AppOnTertiaryContainer = Color(0xFFB2F5CB)
 
-val AppSurface = Color(0xFF283BAF)          // Surface etwas heller als Background
+// Surface-Farben
+val AppSurface = Color(0xFF172068)
 val AppOnSurface = Color.White
-val AppSurfaceVariant = Color(0xFF344180)   // für Cards
-val AppOnSurfaceVariant = Color(0xFFB8C0E8) // sekundäre Texte
+val AppSurfaceVariant = Color(0xFF222E8A)
+val AppOnSurfaceVariant = Color(0xFFB8C2EE)
 
-val AppError = Color(0xFFFFB4AB)
-val AppOnError = Color(0xFF690005)
-val AppErrorContainer = Color(0xFF93000A)
+// Fehler-Farben
+val AppError = Color(0xFFFF6B6B)
+val AppOnError = Color(0xFF520000)
+val AppErrorContainer = Color(0xFF8B0000)
 val AppOnErrorContainer = Color(0xFFFFDAD6)
 
-val AppOutline = Color(0xFF5A6399)
+val AppOutline = Color(0xFF4A5591)

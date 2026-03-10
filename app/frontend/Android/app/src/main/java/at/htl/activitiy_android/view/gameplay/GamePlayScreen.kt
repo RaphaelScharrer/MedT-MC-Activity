@@ -10,6 +10,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
@@ -87,88 +88,69 @@ fun GamePlayScreen(
                 )
             },
             bottomBar = {
-                // Bottom bar shows word + timer when timer is running
+                // Bottom bar shows timer + action buttons when timer is running
                 if (state.phase == GamePhase.TIMER_RUNNING || state.phase == GamePhase.TIME_UP) {
+                    val barColor = if (state.timeUp) Color(0xFFB71C1C) else MaterialTheme.colorScheme.surfaceVariant
                     Surface(
                         tonalElevation = 8.dp,
                         shadowElevation = 16.dp,
-                        color = if (state.timeUp) Color(0xFFD32F2F) else MaterialTheme.colorScheme.primary
+                        color = barColor
                     ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(20.dp),
+                                .padding(horizontal = 20.dp, vertical = 16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-
-                            Spacer(Modifier.height(8.dp))
-
-                            // Word
-                            if (!state.timeUp) {
-                                Text(
-                                    text = "Los gehts!",
-                                    style = MaterialTheme.typography.headlineLarge,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.White,
-                                    textAlign = TextAlign.Center
-                                )
-
-                                Spacer(Modifier.height(16.dp))
-                            }
-
-                            // Timer
+                            // Timer display
                             Box(
                                 modifier = Modifier
                                     .clip(CircleShape)
-                                    .background(Color.White.copy(alpha = 0.2f))
-                                    .padding(horizontal = 32.dp, vertical = 12.dp)
+                                    .background(Color.White.copy(alpha = if (state.timeUp) 0.15f else 0.12f))
+                                    .padding(horizontal = 36.dp, vertical = 10.dp)
                             ) {
                                 Text(
                                     text = formatTime(state.timerSeconds),
-                                    style = MaterialTheme.typography.displayMedium,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color.White,
+                                    color = if (state.timeUp) Color.White else MaterialTheme.colorScheme.onSurface,
                                     fontSize = 48.sp
                                 )
                             }
 
-                            Spacer(Modifier.height(16.dp))
+                            Spacer(Modifier.height(14.dp))
 
                             if (!state.timeUp) {
-                                // "Erraten" button - awards points and navigates back
+                                // "Erraten" button – green
                                 Button(
-                                    onClick = {
-                                        vm.onEvent(GamePlayEvent.WordGuessed)
-                                    },
+                                    onClick = { vm.onEvent(GamePlayEvent.WordGuessed) },
                                     enabled = !state.isLoading,
-                                    modifier = Modifier.fillMaxWidth(),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(52.dp),
+                                    shape = RoundedCornerShape(12.dp),
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color.White,
-                                        contentColor = MaterialTheme.colorScheme.primary
+                                        containerColor = MaterialTheme.colorScheme.tertiary,
+                                        contentColor = MaterialTheme.colorScheme.onTertiary
                                     )
                                 ) {
                                     Text(
-                                        text = "Erraten",
-                                        style = MaterialTheme.typography.titleLarge,
+                                        text = "✓  Erraten!",
+                                        fontSize = 18.sp,
                                         fontWeight = FontWeight.Bold
                                     )
                                 }
-                            }
-
-                            // Time up message
-                            if (state.timeUp) {
-                                Spacer(Modifier.height(16.dp))
+                            } else {
+                                // Time-up state
                                 Text(
                                     text = "ZEIT ABGELAUFEN!",
-                                    style = MaterialTheme.typography.headlineLarge,
-                                    fontWeight = FontWeight.Bold,
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    fontWeight = FontWeight.ExtraBold,
                                     color = Color.White,
                                     textAlign = TextAlign.Center
                                 )
 
-                                Spacer(Modifier.height(16.dp))
+                                Spacer(Modifier.height(12.dp))
 
-                                // "Spielfeld" button - no points, advance turn, go back
                                 Button(
                                     onClick = {
                                         vm.onEvent(GamePlayEvent.ResetForNextTurn)
@@ -178,15 +160,18 @@ fun GamePlayScreen(
                                         (context as? ComponentActivity)?.finish()
                                     },
                                     enabled = !state.isLoading,
-                                    modifier = Modifier.fillMaxWidth(),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(52.dp),
+                                    shape = RoundedCornerShape(12.dp),
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = Color.White,
-                                        contentColor = Color(0xFFD32F2F)
+                                        contentColor = Color(0xFFB71C1C)
                                     )
                                 ) {
                                     Text(
-                                        text = "Spielfeld",
-                                        style = MaterialTheme.typography.titleLarge,
+                                        text = "Zum Spielfeld",
+                                        fontSize = 17.sp,
                                         fontWeight = FontWeight.Bold
                                     )
                                 }
@@ -228,7 +213,6 @@ fun GamePlayScreen(
                     }
 
                     state.phase == GamePhase.WORD_SELECTION -> {
-                        // Word selection phase
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -236,33 +220,43 @@ fun GamePlayScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            // Show which team's turn it is + current player
+                            // Team + player info
                             state.currentTeam?.let { team ->
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically
+                                Surface(
+                                    shape = RoundedCornerShape(12.dp),
+                                    color = MaterialTheme.colorScheme.surfaceVariant,
+                                    modifier = Modifier.fillMaxWidth()
                                 ) {
-                                    Image(
-                                        painter = painterResource(id = team.imageRes),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(32.dp),
-                                        contentScale = ContentScale.Fit
-                                    )
-                                    Spacer(Modifier.width(8.dp))
-                                    Text(
-                                        text = "${team.label} ist dran",
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.Bold
-                                    )
+                                    Row(
+                                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Image(
+                                            painter = painterResource(id = team.imageRes),
+                                            contentDescription = null,
+                                            modifier = Modifier.size(36.dp),
+                                            contentScale = ContentScale.Fit
+                                        )
+                                        Spacer(Modifier.width(12.dp))
+                                        Column {
+                                            Text(
+                                                text = "${team.label} ist dran",
+                                                style = MaterialTheme.typography.titleMedium,
+                                                fontWeight = FontWeight.Bold,
+                                                color = MaterialTheme.colorScheme.onSurface
+                                            )
+                                            state.currentPlayer?.let { player ->
+                                                Text(
+                                                    text = "Spieler: ${player.name}",
+                                                    style = MaterialTheme.typography.bodyMedium,
+                                                    color = MaterialTheme.colorScheme.secondary,
+                                                    fontWeight = FontWeight.SemiBold
+                                                )
+                                            }
+                                        }
+                                    }
                                 }
-                                state.currentPlayer?.let { player ->
-                                    Spacer(Modifier.height(4.dp))
-                                    Text(
-                                        text = player.name,
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                                Spacer(Modifier.height(24.dp))
+                                Spacer(Modifier.height(20.dp))
                             }
 
                             // Word Card
@@ -282,14 +276,28 @@ fun GamePlayScreen(
                     }
 
                     state.phase == GamePhase.TIMER_RUNNING -> {
-                        // Timer running - show encouragement
+                        // Category colors matching board
+                        val categoryColor = when (state.currentCategory) {
+                            WordCategory.ACT -> Color(0xFFE8526A)
+                            WordCategory.DESCRIBE -> Color(0xFF4A6ED4)
+                            WordCategory.DRAW -> Color(0xFF3AA65A)
+                            null -> MaterialTheme.colorScheme.primary
+                        }
+
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(16.dp),
+                                .padding(horizontal = 16.dp, vertical = 24.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
+                            // Category badge
+                            val categoryLabel = when (state.currentCategory) {
+                                WordCategory.DRAW -> "ZEICHNEN"
+                                WordCategory.ACT -> "PANTOMIME"
+                                WordCategory.DESCRIBE -> "ERKLÄREN"
+                                null -> ""
+                            }
                             val emoji = when (state.currentCategory) {
                                 WordCategory.DRAW -> "✏️"
                                 WordCategory.ACT -> "🎭"
@@ -297,37 +305,29 @@ fun GamePlayScreen(
                                 null -> "🎯"
                             }
 
-                            Text(
-                                text = emoji,
-                                fontSize = 80.sp
-                            )
-
-                            Spacer(Modifier.height(24.dp))
-
-                            // Category label
-                            val categoryLabel = when (state.currentCategory) {
-                                WordCategory.DRAW -> "ZEICHNEN"
-                                WordCategory.ACT -> "PANTOMIME"
-                                WordCategory.DESCRIBE -> "ERKLÄREN"
-                                null -> ""
-                            }
-                            Text(
-                                text = categoryLabel,
-                                style = MaterialTheme.typography.titleLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                fontWeight = FontWeight.Bold
-                            )
-
-                            // Player name
-                            state.currentPlayer?.let { player ->
-                                Spacer(Modifier.height(4.dp))
-                                Text(
-                                    text = player.name,
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
+                            Surface(
+                                shape = RoundedCornerShape(24.dp),
+                                color = categoryColor
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Text(text = emoji, fontSize = 22.sp)
+                                    Text(
+                                        text = categoryLabel,
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.ExtraBold,
+                                        color = Color.White,
+                                        letterSpacing = 1.5.sp
+                                    )
+                                }
                             }
 
+                            Spacer(Modifier.height(12.dp))
+
+                            // Instruction
                             Text(
                                 text = when (state.currentCategory) {
                                     WordCategory.DRAW -> "Zeichne das Wort:"
@@ -335,18 +335,39 @@ fun GamePlayScreen(
                                     WordCategory.DESCRIBE -> "Erkläre das Wort:"
                                     null -> ""
                                 },
-                                style = MaterialTheme.typography.headlineLarge,
-                                fontWeight = FontWeight.Bold
-                            )
-
-                            Spacer(Modifier.height(8.dp))
-
-                            Text(
-                                text = state.currentWord?.word ?: "",
-                                style = MaterialTheme.typography.titleLarge,
+                                style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                fontWeight = FontWeight.Bold
+                                textAlign = TextAlign.Center
                             )
+
+                            Spacer(Modifier.height(16.dp))
+
+                            // THE WORD – large, high contrast, on a colored card
+                            Surface(
+                                shape = RoundedCornerShape(16.dp),
+                                color = categoryColor.copy(alpha = 0.18f),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = state.currentWord?.word ?: "",
+                                    fontSize = 42.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 20.dp)
+                                )
+                            }
+
+                            // Player name
+                            state.currentPlayer?.let { player ->
+                                Spacer(Modifier.height(16.dp))
+                                Text(
+                                    text = player.name,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.secondary,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
                         }
                     }
 
@@ -362,30 +383,41 @@ fun GamePlayScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Red.copy(alpha = 0.70f)),
+                    .background(Color(0xFFB71C1C).copy(alpha = 0.92f)),
                 contentAlignment = Alignment.Center
             ) {
                 Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.padding(32.dp)
                 ) {
                     Text(
-                        text = "ZEIT ABGELAUFEN!",
-                        style = MaterialTheme.typography.displaySmall,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        text = "⏰",
+                        fontSize = 72.sp
+                    )
+                    Spacer(Modifier.height(16.dp))
+                    Text(
+                        text = "ZEIT\nABGELAUFEN!",
+                        fontSize = 40.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.White,
+                        textAlign = TextAlign.Center,
+                        lineHeight = 44.sp
                     )
 
                     Spacer(Modifier.height(32.dp))
 
                     Button(
                         onClick = { showRedScreen = false },
+                        modifier = Modifier.fillMaxWidth().height(52.dp),
+                        shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.White,
-                            contentColor = Color.Red
+                            contentColor = Color(0xFFB71C1C)
                         )
                     ) {
                         Text(
                             text = "Schließen",
+                            fontSize = 17.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }

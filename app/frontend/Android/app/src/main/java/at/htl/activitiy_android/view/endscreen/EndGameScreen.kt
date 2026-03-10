@@ -5,17 +5,22 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
@@ -103,73 +108,108 @@ fun EndGameContent(
             .padding(16.dp)
     ) {
         // Header
-        Text(
-            text = "Spiel Ende",
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 24.dp)
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(text = "🏆", fontSize = 56.sp)
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = "Spiel beendet!",
+                fontSize = 30.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                text = "Rangliste",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
 
         // Rankings
         LazyColumn(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            item {
-                Text(
-                    text = "Rangliste",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
             itemsIndexed(state.rankedTeams, key = { _, pair -> pair.first.id ?: 0 }) { index, (team, position) ->
                 val teamPlayers = state.allPlayers.filter { it.team == team.id }
                 val rank = index + 1
 
+                // Medal colors
+                val medalEmoji = when (rank) { 1 -> "🥇"; 2 -> "🥈"; 3 -> "🥉"; else -> null }
+                val cardColor = when (rank) {
+                    1 -> Color(0xFF7A5C00)   // gold tint
+                    2 -> Color(0xFF4A5060)   // silver tint
+                    3 -> Color(0xFF5A3820)   // bronze tint
+                    else -> MaterialTheme.colorScheme.surfaceVariant
+                }
+                val borderColor = when (rank) {
+                    1 -> Color(0xFFFFD700)
+                    2 -> Color(0xFFB0BEC5)
+                    3 -> Color(0xFFCD7F32)
+                    else -> Color.Transparent
+                }
+
                 Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = when (rank) {
-                            1 -> MaterialTheme.colorScheme.primaryContainer
-                            2 -> MaterialTheme.colorScheme.secondaryContainer
-                            3 -> MaterialTheme.colorScheme.tertiaryContainer
-                            else -> MaterialTheme.colorScheme.surfaceVariant
-                        }
-                    )
+                    shape = RoundedCornerShape(14.dp),
+                    colors = CardDefaults.cardColors(containerColor = cardColor),
+                    elevation = CardDefaults.cardElevation(defaultElevation = if (rank == 1) 8.dp else 2.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp)
-                    ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
                         // Team Header with Rank
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            // Rank Badge
-                            Text(
-                                text = "$rank.",
-                                style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.width(48.dp)
-                            )
+                            // Rank badge
+                            if (medalEmoji != null) {
+                                Text(
+                                    text = medalEmoji,
+                                    fontSize = if (rank == 1) 32.sp else 26.sp,
+                                    modifier = Modifier.width(44.dp)
+                                )
+                            } else {
+                                Box(
+                                    modifier = Modifier
+                                        .size(36.dp)
+                                        .background(
+                                            color = MaterialTheme.colorScheme.surfaceVariant,
+                                            shape = CircleShape
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "$rank",
+                                        fontWeight = FontWeight.ExtraBold,
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        fontSize = 14.sp
+                                    )
+                                }
+                                Spacer(Modifier.width(8.dp))
+                            }
 
                             Image(
                                 painter = painterResource(id = team.imageRes),
                                 contentDescription = null,
-                                modifier = Modifier.size(32.dp),
+                                modifier = Modifier.size(if (rank == 1) 40.dp else 32.dp),
                                 contentScale = ContentScale.Fit
                             )
                             Spacer(Modifier.width(12.dp))
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
                                     text = team.label,
-                                    style = MaterialTheme.typography.titleLarge,
-                                    fontWeight = FontWeight.Bold
+                                    fontSize = if (rank == 1) 20.sp else 17.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = Color.White
                                 )
                                 Text(
-                                    "Position: $position | ${teamPlayers.size} Spieler",
+                                    text = "Feld $position  •  ${teamPlayers.size} Spieler",
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                                    color = Color.White.copy(alpha = 0.7f)
                                 )
                             }
                         }
@@ -177,43 +217,37 @@ fun EndGameContent(
                         // Players in this team
                         if (teamPlayers.isNotEmpty()) {
                             Spacer(Modifier.height(12.dp))
-                            HorizontalDivider()
+                            HorizontalDivider(color = Color.White.copy(alpha = 0.2f))
                             Spacer(Modifier.height(8.dp))
 
                             teamPlayers.forEach { player ->
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(vertical = 4.dp),
+                                        .padding(vertical = 3.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Image(
                                         painter = painterResource(id = team.imageRes),
                                         contentDescription = null,
-                                        modifier = Modifier.size(18.dp),
+                                        modifier = Modifier.size(16.dp),
                                         contentScale = ContentScale.Fit
                                     )
                                     Spacer(Modifier.width(8.dp))
                                     Text(
                                         player.name,
-                                        style = MaterialTheme.typography.bodyLarge
-                                    )
-                                    Spacer(Modifier.weight(1f))
-                                    Text(
-                                        "${player.pointsEarned} Punkte",
                                         style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                                        color = Color.White,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    Text(
+                                        text = "${player.pointsEarned ?: 0} Pkt.",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (rank == 1) Color(0xFFFFD700) else Color.White.copy(alpha = 0.85f)
                                     )
                                 }
                             }
-                        } else {
-                            Spacer(Modifier.height(8.dp))
-                            Text(
-                                text = "Keine Spieler in diesem Team",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                                modifier = Modifier.padding(vertical = 8.dp)
-                            )
                         }
                     }
                 }
@@ -221,7 +255,7 @@ fun EndGameContent(
         }
 
         // Button zum GameModeScreen
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(12.dp))
         Button(
             onClick = {
                 val intent = Intent(context, MainActivity::class.java).apply {
@@ -233,7 +267,12 @@ fun EndGameContent(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(56.dp)
+                .height(56.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = MaterialTheme.colorScheme.onSecondary
+            )
         ) {
             Text(
                 text = "Neues Spiel starten",
