@@ -1,6 +1,7 @@
 package at.htl.activitiy_android.view.playfield
 
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,7 +15,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -66,7 +69,6 @@ fun GameBoardScreen(
     var selectedTeam by remember { mutableStateOf<Team?>(null) }
     var showSaveConfirmDialog by remember { mutableStateOf(false) }
 
-    // Spieler des angeklickten Teams
     val selectedTeamPlayers = remember(selectedTeam, state.players) {
         val teamId = selectedTeam?.id ?: return@remember emptyList()
         state.players.filter { it.team == teamId }
@@ -76,7 +78,6 @@ fun GameBoardScreen(
         vm.loadBoardState()
     }
 
-    // Navigate to EndGameScreen when only 1 team is left
     LaunchedEffect(state.finishedTeamIds.size) {
         val activeTeams = state.teams.filter { it.id !in state.finishedTeamIds }
         if (activeTeams.size <= 1 && state.teams.isNotEmpty()) {
@@ -85,7 +86,6 @@ fun GameBoardScreen(
         }
     }
 
-    // Navigate to start screen after save completed
     LaunchedEffect(state.saveCompleted) {
         if (state.saveCompleted) {
             val intent = Intent(context, MainActivity::class.java).apply {
@@ -96,7 +96,6 @@ fun GameBoardScreen(
         }
     }
 
-    // Bestätigungs-Dialog für Beenden & Speichern
     if (showSaveConfirmDialog) {
         AlertDialog(
             onDismissRequest = { showSaveConfirmDialog = false },
@@ -134,7 +133,6 @@ fun GameBoardScreen(
         )
     }
 
-    // Team Info Dialog
     selectedTeam?.let { team ->
         TeamInfoDialog(
             team = team,
@@ -143,71 +141,74 @@ fun GameBoardScreen(
         )
     }
 
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        // Game Board Grid
-        Column(
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val gridCols = if (isLandscape) 5 else 3
+    val gridRows = if (isLandscape) 3 else 5
+
+    Column(modifier = Modifier.fillMaxSize()) {
+
+        Box(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-            // START field
-            StartField(
-                teamsOnStart = state.teams.filter {
-                    (state.teamBoardPositions[it.id] ?: 0) == 0
-                },
-                onTeamClick = { selectedTeam = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .padding(4.dp)
-            )
+            Column(modifier = Modifier.fillMaxSize()) {
 
-            // 15 game fields in 5 rows of 3
-            for (row in 0 until 5) {
-                Row(
+                StartField(
+                    teamsOnStart = state.teams.filter {
+                        (state.teamBoardPositions[it.id] ?: 0) == 0
+                    },
+                    onTeamClick = { selectedTeam = it },
+                    isLandscape = isLandscape,
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
-                ) {
-                    for (col in 0 until 3) {
-                        val fieldIndex = row * 3 + col
-                        val boardPosition = fieldIndex + 1 // board positions 1-15
+                        .padding(4.dp)
+                )
 
-                        val teamsOnField = state.teams.filter {
-                            val pos = state.teamBoardPositions[it.id] ?: 0
-                            pos == boardPosition
+                for (row in 0 until gridRows) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    ) {
+                        for (col in 0 until gridCols) {
+                            val fieldIndex = row * gridCols + col
+                            val boardPosition = fieldIndex + 1
+                            val teamsOnField = state.teams.filter {
+                                (state.teamBoardPositions[it.id] ?: 0) == boardPosition
+                            }
+                            GameField(
+                                fieldIndex = fieldIndex,
+                                teamsOnField = teamsOnField,
+                                onTeamClick = { selectedTeam = it },
+                                isLandscape = isLandscape,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxHeight()
+                                    .padding(4.dp)
+                            )
                         }
-
-                        GameField(
-                            fieldIndex = fieldIndex,
-                            teamsOnField = teamsOnField,
-                            onTeamClick = { selectedTeam = it },
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxHeight()
-                                .padding(4.dp)
-                        )
                     }
                 }
+
+                GoalField(
+                    teamsAtGoal = state.teams.filter {
+                        (state.teamBoardPositions[it.id] ?: 0) >= 16
+                    },
+                    onTeamClick = { selectedTeam = it },
+                    isLandscape = isLandscape,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(4.dp)
+                )
             }
 
-            // GOAL field
-            GoalField(
-                teamsAtGoal = state.teams.filter {
-                    (state.teamBoardPositions[it.id] ?: 0) >= 16
-                },
-                onTeamClick = { selectedTeam = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .padding(4.dp)
-            )
         }
 
-        // Bottom Bar
+        // ── Bottom Bar ───────────────────────────────────────────────────────
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shadowElevation = 8.dp,
@@ -263,7 +264,7 @@ fun GameBoardScreen(
                         )
                     } else {
                         Text(
-                            text = "Beenden & Speichern",
+                            text = "Beenden",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
@@ -273,6 +274,8 @@ fun GameBoardScreen(
         }
     }
 }
+
+// ── Spielfeld-Composables ────────────────────────────────────────────────────
 
 @Composable
 fun TeamInfoDialog(
@@ -297,25 +300,19 @@ fun TeamInfoDialog(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Team Icon
                 Image(
                     painter = painterResource(id = team.imageRes),
                     contentDescription = team.label,
                     modifier = Modifier.size(80.dp),
                     contentScale = ContentScale.Fit
                 )
-
-                // Team Name
                 Text(
                     text = team.label,
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-
                 HorizontalDivider()
-
-                // Team Members
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -326,7 +323,6 @@ fun TeamInfoDialog(
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
-
                     if (players.isEmpty()) {
                         Text(
                             text = "Keine Spieler im Team",
@@ -339,10 +335,7 @@ fun TeamInfoDialog(
                         }
                     }
                 }
-
                 Spacer(modifier = Modifier.height(8.dp))
-
-                // Close Button
                 TextButton(
                     onClick = onDismiss,
                     modifier = Modifier.fillMaxWidth()
@@ -383,14 +376,13 @@ fun PlayerItem(playerName: String) {
 fun StartField(
     teamsOnStart: List<Team>,
     onTeamClick: (Team) -> Unit,
+    isLandscape: Boolean = false,
     modifier: Modifier = Modifier
 ) {
+    val iconRotation = 0f
     Box(
         modifier = modifier
-            .background(
-                color = Color(0xFFE8DEF8),
-                shape = RoundedCornerShape(8.dp)
-            ),
+            .background(color = Color(0xFFE8DEF8), shape = RoundedCornerShape(8.dp)),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -405,15 +397,14 @@ fun StartField(
             )
             if (teamsOnStart.isNotEmpty()) {
                 Spacer(Modifier.height(4.dp))
-                Row(
-                    horizontalArrangement = Arrangement.Center
-                ) {
+                Row(horizontalArrangement = Arrangement.Center) {
                     teamsOnStart.forEach { team ->
                         Image(
                             painter = painterResource(id = team.imageRes),
                             contentDescription = team.label,
                             modifier = Modifier
-                                .size(28.dp)
+                                .size(36.dp)
+                                .graphicsLayer { rotationZ = iconRotation }
                                 .clickable { onTeamClick(team) },
                             contentScale = ContentScale.Fit
                         )
@@ -429,14 +420,13 @@ fun StartField(
 fun GoalField(
     teamsAtGoal: List<Team>,
     onTeamClick: (Team) -> Unit,
+    isLandscape: Boolean = false,
     modifier: Modifier = Modifier
 ) {
+    val iconRotation = 0f
     Box(
         modifier = modifier
-            .background(
-                color = Color(0xFFE8DEF8),
-                shape = RoundedCornerShape(8.dp)
-            ),
+            .background(color = Color(0xFFE8DEF8), shape = RoundedCornerShape(8.dp)),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -451,15 +441,14 @@ fun GoalField(
             )
             if (teamsAtGoal.isNotEmpty()) {
                 Spacer(Modifier.height(4.dp))
-                Row(
-                    horizontalArrangement = Arrangement.Center
-                ) {
+                Row(horizontalArrangement = Arrangement.Center) {
                     teamsAtGoal.forEach { team ->
                         Image(
                             painter = painterResource(id = team.imageRes),
                             contentDescription = team.label,
                             modifier = Modifier
-                                .size(28.dp)
+                                .size(36.dp)
+                                .graphicsLayer { rotationZ = iconRotation }
                                 .clickable { onTeamClick(team) },
                             contentScale = ContentScale.Fit
                         )
@@ -476,38 +465,48 @@ fun GameField(
     fieldIndex: Int,
     teamsOnField: List<Team>,
     onTeamClick: (Team) -> Unit,
+    isLandscape: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     val bgColor = when (fieldIndex % 3) {
-        0 -> Color(0xFFF09BAA)  // Rot - Zeichnen
-        1 -> Color(0xFF99B4F2)  // Blau - Erklaeren
-        else -> Color(0xFFB8F599)  // Gruen - Pantomime
+        0    -> Color(0xFFF09BAA)   // Rot  – Pantomime
+        1    -> Color(0xFF99B4F2)   // Blau – Erklären
+        else -> Color(0xFFB8F599)   // Grün – Zeichnen
     }
     val iconRes = when (fieldIndex % 3) {
-        0 -> R.drawable.ic_1  // Zeichnen
-        1 -> R.drawable.ic_2  // Erklaeren
-        else -> R.drawable.ic_3  // Pantomime
+        0    -> R.drawable.ic_1
+        1    -> R.drawable.ic_2
+        else -> R.drawable.ic_3
     }
+    val fieldNumber = fieldIndex + 1
+    val iconRotation = 0f
 
     Box(
         modifier = modifier
-            .background(
-                color = bgColor,
-                shape = RoundedCornerShape(8.dp)
-            ),
+            .background(color = bgColor, shape = RoundedCornerShape(8.dp)),
         contentAlignment = Alignment.Center
     ) {
-        // Category icon
+        // Kategorie-Icon (rotiert im Landscape-Modus)
         Image(
             painter = painterResource(id = iconRes),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp),
+                .padding(12.dp)
+                .graphicsLayer { rotationZ = iconRotation },
             contentScale = ContentScale.Fit
         )
-
-        // Team icons overlay at bottom
+        // Feldnummer oben links
+        Text(
+            text = fieldNumber.toString(),
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black.copy(alpha = 0.45f),
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(3.dp)
+        )
+        // Spielfiguren unten (rotiert im Landscape-Modus)
         if (teamsOnField.isNotEmpty()) {
             Row(
                 modifier = Modifier
@@ -520,7 +519,8 @@ fun GameField(
                         painter = painterResource(id = team.imageRes),
                         contentDescription = team.label,
                         modifier = Modifier
-                            .size(20.dp)
+                            .size(28.dp)
+                            .graphicsLayer { rotationZ = iconRotation }
                             .clickable { onTeamClick(team) },
                         contentScale = ContentScale.Fit
                     )

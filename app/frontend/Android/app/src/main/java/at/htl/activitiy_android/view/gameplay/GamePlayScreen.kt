@@ -236,7 +236,7 @@ fun GamePlayScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            // Show which team's turn it is
+                            // Show which team's turn it is + current player
                             state.currentTeam?.let { team ->
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically
@@ -252,6 +252,14 @@ fun GamePlayScreen(
                                         text = "${team.label} ist dran",
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Bold
+                                    )
+                                }
+                                state.currentPlayer?.let { player ->
+                                    Spacer(Modifier.height(4.dp))
+                                    Text(
+                                        text = player.name,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                                 Spacer(Modifier.height(24.dp))
@@ -309,6 +317,16 @@ fun GamePlayScreen(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 fontWeight = FontWeight.Bold
                             )
+
+                            // Player name
+                            state.currentPlayer?.let { player ->
+                                Spacer(Modifier.height(4.dp))
+                                Text(
+                                    text = player.name,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
 
                             Text(
                                 text = when (state.currentCategory) {

@@ -162,7 +162,14 @@ object GameRepository {
         val teamIds = teams.map { it.id }
         val allPlayers = api.getAllPlayers()
         val players = allPlayers.filter { it.team in teamIds }
-        _currentSession.update { it.copy(players = players) }
+        _currentSession.update { session ->
+            // Initialisiere currentPlayerIndices für alle Teams (falls noch nicht gesetzt)
+            val existingIndices = session.currentPlayerIndices
+            val initializedIndices = teamIds.filterNotNull().associate { teamId ->
+                teamId to (existingIndices[teamId] ?: 0)
+            }
+            session.copy(players = players, currentPlayerIndices = initializedIndices)
+        }
         players
     }
 
@@ -207,6 +214,37 @@ object GameRepository {
     }
 
     fun getPlayers(): List<Player> = _currentSession.value.players
+
+    fun getCurrentPlayerForTeam(teamId: Long): Player? {
+        val session = _currentSession.value
+        val players = session.players.filter { it.team == teamId }
+        if (players.isEmpty()) return null
+        val index = (session.currentPlayerIndices[teamId] ?: 0).coerceIn(0, players.size - 1)
+        return players.getOrNull(index)
+    }
+
+    fun advanceToNextPlayerForTeam(teamId: Long) {
+        val session = _currentSession.value
+        val players = session.players.filter { it.team == teamId }
+        if (players.isEmpty()) return
+        val currentIndex = session.currentPlayerIndices[teamId] ?: 0
+        val nextIndex = (currentIndex + 1) % players.size
+        _currentSession.update { it.copy(currentPlayerIndices = it.currentPlayerIndices + (teamId to nextIndex)) }
+    }
+
+    suspend fun updatePlayerPointsInBackend(playerId: Long, pointsToAdd: Int): Result<Unit> = runCatching {
+        mutex.withLock {
+            val player = _currentSession.value.players.find { it.id == playerId }
+                ?: throw IllegalArgumentException("Player $playerId not found")
+            // Nur die dazuverdienten Punkte senden – Backend addiert sie auf den bestehenden Wert
+            val updated = api.updatePlayer(playerId, player.copy(pointsEarned = pointsToAdd.toLong()))
+            _currentSession.update { session ->
+                session.copy(players = session.players.map {
+                    if (it.id == playerId) updated else it
+                })
+            }
+        }
+    }
 
     // ========== WORD OPERATIONS ==========
 
@@ -350,5 +388,6 @@ data class GameSession(
     val usedWordIds: Set<Long> = emptySet(),
     val currentTeamIndex: Int = 0,
     val teamBoardPositions: Map<Long, Int> = emptyMap(),
-    val finishedTeamIds: Set<Long> = emptySet()
+    val finishedTeamIds: Set<Long> = emptySet(),
+    val currentPlayerIndices: Map<Long, Int> = emptyMap()  // teamId -> playerIndex
 )

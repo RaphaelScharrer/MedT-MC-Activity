@@ -42,6 +42,7 @@ class GamePlayViewModel(
                 // Load data from repository
                 repository.loadGame(gameId).onFailure { throw it }
                 repository.loadTeamsForGame(gameId).onFailure { throw it }
+                repository.loadPlayersForGame(gameId).onFailure { throw it }
                 repository.loadAllWords().onFailure { throw it }
 
                 // Get data from repository
@@ -53,6 +54,9 @@ class GamePlayViewModel(
                 val teamIndex = repository.getCurrentTeamIndex()
                     .coerceIn(0, (activeTeams.size - 1).coerceAtLeast(0))
                 val currentTeam = activeTeams.getOrNull(teamIndex)
+
+                // Get current player for this team
+                val currentPlayer = currentTeam?.id?.let { repository.getCurrentPlayerForTeam(it) }
 
                 // Determine category based on team's board position
                 val boardPos = currentTeam?.id?.let { repository.getTeamBoardPosition(it) } ?: 0
@@ -67,6 +71,7 @@ class GamePlayViewModel(
                         gameName = session.game?.name ?: "Spiel",
                         teams = activeTeams,
                         currentTeam = currentTeam,
+                        currentPlayer = currentPlayer,
                         currentTeamIndex = teamIndex,
                         currentCategory = category,
                         availableWords = categoryWords,
@@ -191,6 +196,19 @@ class GamePlayViewModel(
             }
         }
 
+        // Award points to current player in backend
+        val currentPlayerId = s.currentPlayer?.id
+        if (currentPlayerId != null) {
+            viewModelScope.launch {
+                repository.updatePlayerPointsInBackend(currentPlayerId, points).onFailure { e ->
+                    _state.update { it.copy(error = "Spielerpunkte konnten nicht gespeichert werden: ${e.message}") }
+                }
+            }
+        }
+
+        // Advance player rotation for this team
+        repository.advanceToNextPlayerForTeam(teamId)
+
         // Advance to next active team for the next round
         repository.advanceToNextTeam()
 
@@ -205,6 +223,10 @@ class GamePlayViewModel(
 
     private fun resetForNextTurn() {
         timerJob?.cancel()
+        val teamId = _state.value.currentTeam?.id
+
+        // Advance player rotation for this team (even wenn kein Wort erraten)
+        teamId?.let { repository.advanceToNextPlayerForTeam(it) }
 
         // Advance to next active team (no points awarded)
         repository.advanceToNextTeam()

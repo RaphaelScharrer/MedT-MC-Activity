@@ -1,11 +1,13 @@
 package at.htl.activitiy_android.view.gameplay
 
+import at.htl.activitiy_android.domain.model.Player
 import at.htl.activitiy_android.domain.model.Team
 import at.htl.activitiy_android.domain.model.Word
 import at.htl.activitiy_android.domain.model.WordCategory
 
 data class GamePlayState(
     val currentTeam: Team? = null,
+    val currentPlayer: Player? = null,
     val currentTeamIndex: Int = 0,
     val teams: List<Team> = emptyList(),
     val availableWords: List<Word> = emptyList(),

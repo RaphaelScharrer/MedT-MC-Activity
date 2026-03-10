@@ -176,9 +176,9 @@ public class PlayerResource {
             // Team aktualisieren
             player.team = newTeam;
 
-            // Punkte aktualisieren
+            // Punkte draufrechnen
             if (dto.pointsEarned() != null) {
-                player.pointsEarned = dto.pointsEarned();
+                player.pointsEarned = (player.pointsEarned != null ? player.pointsEarned : 0L) + dto.pointsEarned();
             }
 
             player.persist();

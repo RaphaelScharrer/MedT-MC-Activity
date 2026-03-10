@@ -21,21 +21,3 @@ POST http://localhost:8080/teams
 Content-Type: application/json
 
 {
-  "position": 2,
-  "gameId": 1
-}
-
-### Update team
-PUT http://localhost:8080/teams/1
-Content-Type: application/json
-
-{
-  "position": 3,
-  "gameId": 1
-}
-
-### Delete team by ID
-DELETE http://localhost:8080/teams/1
-
-### Delete all teams
-DELETE http://localhost:8080/teams
