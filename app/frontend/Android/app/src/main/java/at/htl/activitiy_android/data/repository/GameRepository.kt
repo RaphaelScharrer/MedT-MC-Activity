@@ -161,7 +161,7 @@ object GameRepository {
         }
         val teamIds = teams.map { it.id }
         val allPlayers = api.getAllPlayers()
-        val players = allPlayers.filter { it.team in teamIds }
+        val players = allPlayers.filter { it.team in teamIds }.sortedBy { it.id ?: 0L }
         _currentSession.update { session ->
             // Initialisiere currentPlayerIndices für alle Teams (falls noch nicht gesetzt)
             val existingIndices = session.currentPlayerIndices
@@ -217,7 +217,7 @@ object GameRepository {
 
     fun getCurrentPlayerForTeam(teamId: Long): Player? {
         val session = _currentSession.value
-        val players = session.players.filter { it.team == teamId }
+        val players = session.players.filter { it.team == teamId }.sortedBy { it.id ?: 0L }
         if (players.isEmpty()) return null
         val index = (session.currentPlayerIndices[teamId] ?: 0).coerceIn(0, players.size - 1)
         return players.getOrNull(index)
@@ -225,7 +225,7 @@ object GameRepository {
 
     fun advanceToNextPlayerForTeam(teamId: Long) {
         val session = _currentSession.value
-        val players = session.players.filter { it.team == teamId }
+        val players = session.players.filter { it.team == teamId }.sortedBy { it.id ?: 0L }
         if (players.isEmpty()) return
         val currentIndex = session.currentPlayerIndices[teamId] ?: 0
         val nextIndex = (currentIndex + 1) % players.size

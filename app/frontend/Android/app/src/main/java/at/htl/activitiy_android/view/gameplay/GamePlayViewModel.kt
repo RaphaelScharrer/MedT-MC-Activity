@@ -181,6 +181,7 @@ class GamePlayViewModel(
     }
 
     private fun wordGuessed() {
+        if (_state.value.navigateToBoard) return
         timerJob?.cancel()
         val s = _state.value
         val points = s.selectedDifficulty ?: return

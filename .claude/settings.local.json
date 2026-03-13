@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(java -version)",
-      "Bash(echo \"JAVA_HOME: $JAVA_HOME\")"
+      "Bash(echo \"JAVA_HOME: $JAVA_HOME\")",
+      "Bash(find 'D:\\\\Schule\\\\5AHITM\\\\2. Semester\\\\MedT-MC\\\\MedT-MC-Activity' -type f \\\\\\(-name *.sql -o -name *schema* -o -name *migration* -o -name *database* \\\\\\))"
     ]
   }
 }

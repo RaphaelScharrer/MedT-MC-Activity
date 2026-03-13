@@ -78,6 +78,9 @@ fun AppNavigation(resetToGameMode: Boolean = false) {
                     currentGameId = gameId
                     currentScreen = Screen.GameSummary
                 },
+                onBack = {
+                    currentScreen = Screen.GameMode
+                },
                 vm = gameVm
             )
         }

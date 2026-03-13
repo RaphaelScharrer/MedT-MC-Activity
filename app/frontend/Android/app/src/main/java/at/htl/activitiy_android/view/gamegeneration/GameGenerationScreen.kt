@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -24,6 +25,7 @@ fun GameGenerationScreen(
     onGameCreated: (Long) -> Unit,
     onNameConfirmed: ((String) -> Unit)? = null,
     onGameResumed: ((Long) -> Unit)? = null,
+    onBack: (() -> Unit)? = null,
     vm: GameGenerationViewModel = viewModel()
 ) {
     val state by vm.state.collectAsState()
@@ -71,7 +73,23 @@ fun GameGenerationScreen(
         )
     }
 
-    Scaffold { padding ->
+    Scaffold(
+        topBar = {
+            if (onBack != null) {
+                TopAppBar(
+                    title = { Text(text = stringResource(R.string.gamegeneration_new_game)) },
+                    navigationIcon = {
+                        IconButton(onClick = onBack) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Zurück"
+                            )
+                        }
+                    }
+                )
+            }
+        }
+    ) { padding ->
         Box(
             modifier = Modifier
                 .padding(padding)
