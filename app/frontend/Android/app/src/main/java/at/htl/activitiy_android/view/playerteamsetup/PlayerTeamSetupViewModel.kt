@@ -31,6 +31,7 @@ class PlayerTeamSetupViewModel(
             PlayerTeamSetupEvent.AddPlayer -> addPlayer()
             is PlayerTeamSetupEvent.RemovePlayer -> removePlayer(event.name)
             is PlayerTeamSetupEvent.CycleTeam -> cycleTeam(event.name)
+            PlayerTeamSetupEvent.RandomAssign -> randomAssign()
             PlayerTeamSetupEvent.FinishClicked -> validateAndShowConfirm()
             PlayerTeamSetupEvent.ConfirmTeams -> persistToBackend()
             PlayerTeamSetupEvent.DismissConfirmDialog -> _state.update {
@@ -90,6 +91,16 @@ class PlayerTeamSetupViewModel(
                 }
             )
         }
+    }
+
+    private fun randomAssign() {
+        val players = _state.value.players
+        if (players.isEmpty()) return
+        val shuffled = players.shuffled()
+        val reassigned = shuffled.mapIndexed { index, player ->
+            player.copy(teamPosition = index % 4)
+        }
+        _state.update { it.copy(players = reassigned, successMessage = "Teams zufällig zugeteilt") }
     }
 
     private fun validateAndShowConfirm() {

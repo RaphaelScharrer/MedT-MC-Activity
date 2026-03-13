@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -67,6 +68,22 @@ fun PlayerTeamSetupScreen(
                 }
             )
         },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { vm.onEvent(PlayerTeamSetupEvent.RandomAssign) },
+                shape = CircleShape,
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = MaterialTheme.colorScheme.onSecondary,
+                modifier = Modifier.size(64.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Casino,
+                    contentDescription = "Zufällig zuweisen",
+                    modifier = Modifier.size(28.dp)
+                )
+            }
+        },
+        floatingActionButtonPosition = FabPosition.End,
         bottomBar = {
             Surface(
                 tonalElevation = 3.dp,
@@ -253,7 +270,6 @@ fun PlayerTeamSetupScreen(
                 // Spielerliste Header
                 Text(
                     text = "${stringResource(R.string.playerteamsetup_player_count)} (${state.players.size})",
-                    //"Spieler (${state.players.size})",
                     fontWeight = FontWeight.SemiBold,
                     style = MaterialTheme.typography.titleSmall
                 )

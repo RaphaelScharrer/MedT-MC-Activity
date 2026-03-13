@@ -5,6 +5,7 @@ sealed interface PlayerTeamSetupEvent {
     data object AddPlayer : PlayerTeamSetupEvent
     data class RemovePlayer(val name: String) : PlayerTeamSetupEvent
     data class CycleTeam(val name: String) : PlayerTeamSetupEvent
+    data object RandomAssign : PlayerTeamSetupEvent
     data object FinishClicked : PlayerTeamSetupEvent
     data object ConfirmTeams : PlayerTeamSetupEvent
     data object DismissConfirmDialog : PlayerTeamSetupEvent

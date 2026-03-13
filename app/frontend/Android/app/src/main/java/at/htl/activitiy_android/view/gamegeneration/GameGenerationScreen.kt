@@ -246,8 +246,24 @@ fun GameGenerationScreen(
                                         overflow = TextOverflow.Ellipsis
                                     )
                                     if (!game.createdOn.isNullOrBlank()) {
+                                        val formattedDate = try {
+                                            val inputFormats = listOf(
+                                                java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", java.util.Locale.getDefault()),
+                                                java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale.getDefault()),
+                                                java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
+                                            )
+                                            val outputFormat = java.text.SimpleDateFormat("dd.MM.yyyy HH:mm", java.util.Locale.getDefault())
+                                            var parsed: java.util.Date? = null
+                                            for (fmt in inputFormats) {
+                                                parsed = try { fmt.parse(game.createdOn) } catch (e: Exception) { null }
+                                                if (parsed != null) break
+                                            }
+                                            if (parsed != null) outputFormat.format(parsed) else game.createdOn
+                                        } catch (e: Exception) {
+                                            game.createdOn
+                                        }
                                         Text(
-                                            text = game.createdOn,
+                                            text = formattedDate,
                                             style = MaterialTheme.typography.bodySmall,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                                         )

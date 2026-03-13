@@ -348,14 +348,29 @@ fun GamePlayScreen(
                                 color = categoryColor.copy(alpha = 0.18f),
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Text(
-                                    text = state.currentWord?.word ?: "",
-                                    fontSize = 42.sp,
-                                    fontWeight = FontWeight.ExtraBold,
-                                    color = MaterialTheme.colorScheme.onBackground,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 20.dp)
-                                )
+                                Column(
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 20.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text(
+                                        text = state.currentWord?.word ?: "",
+                                        fontSize = 42.sp,
+                                        fontWeight = FontWeight.ExtraBold,
+                                        color = MaterialTheme.colorScheme.onBackground,
+                                        textAlign = TextAlign.Center
+                                    )
+                                    val definition = state.currentWord?.definition
+                                    if (!definition.isNullOrBlank()) {
+                                        Spacer(Modifier.height(8.dp))
+                                        Text(
+                                            text = definition,
+                                            fontSize = 15.sp,
+                                            fontWeight = FontWeight.Normal,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            textAlign = TextAlign.Center
+                                        )
+                                    }
+                                }
                             }
 
                             // Player name
