@@ -17,7 +17,6 @@ public class GameResource {
 
     @GET
     public List<GameDTO> getAllGames() {
-        // ✅ FIX: Use toList() instead of collect()
         return Game.<Game>listAll().stream()
                 .map(GameDTO::new)
                 .toList();

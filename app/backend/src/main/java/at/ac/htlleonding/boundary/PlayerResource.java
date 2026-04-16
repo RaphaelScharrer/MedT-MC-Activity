@@ -26,7 +26,6 @@ public class PlayerResource {
     @GET
     public Response getAllPlayers() {
         try {
-            // ✅ FIX: Use listAll() instead of streamAll()
             List<PlayerDTO> players = Player.<Player>listAll().stream()
                     .map(PlayerDTO::from)
                     .toList();
@@ -68,7 +67,6 @@ public class PlayerResource {
         }
 
         try {
-            // ✅ FIX: Use list() instead of streamByTeam()
             List<PlayerDTO> players = Player.<Player>list("team", team).stream()
                     .map(PlayerDTO::from)
                     .toList();

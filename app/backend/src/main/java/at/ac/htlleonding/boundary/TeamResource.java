@@ -24,7 +24,6 @@ public class TeamResource {
     @GET
     public Response getAllTeams() {
         try {
-            // ✅ FIX: Use listAll() instead of streamAll() to avoid ResultSet closed
             List<TeamDTO> teams = Team.<Team>listAll().stream()
                     .map(TeamDTO::new)
                     .toList();

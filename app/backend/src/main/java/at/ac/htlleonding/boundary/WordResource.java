@@ -226,6 +226,7 @@ public class WordResource {
     public Response deleteWord(@PathParam("id") Long id) {
         Word word = Word.findById(id);
 
+
         if (word == null) {
             return Response
                     .status(Response.Status.NOT_FOUND)
